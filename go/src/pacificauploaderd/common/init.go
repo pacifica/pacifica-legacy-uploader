@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"platform"
+	"strings"
 )
 
 var (
@@ -63,6 +64,15 @@ func Init() {
 	if System && BaseDir == DefaultBaseDirGet() {
 		BaseDir = DefaultSystemBaseDirGet()
 	}
+	oldname := strings.Replace(BaseDir, 'pacifica', 'myemsl', -1)
+	oldname = strings.Replace(oldname, 'Pacifica', 'MyEMSL', -1)
+//FIXME Old migration code. Remove someday.
+	fi, err := os.Stat(oldname)
+	if err == nil && fi.IsDir() {
+		log.Printf("This system needs to be migrated. Bailing.\n")
+		os.Exit(-1)
+	}
+//FIXME End of old migration code.
 	os.MkdirAll(BaseDir, 0755)
 	setupLogger(LogDirGet())
 	StateDir = filepath.Join(BaseDir, "state")
