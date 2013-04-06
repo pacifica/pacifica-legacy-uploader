@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+	<file>images/disconnect.svg</file>
+	<file>images/auth.svg</file>
+	<file>images/processing.svg</file>
+	<file>images/uploading.svg</file>
+	<file>images/error.svg</file>
+	<file>images/idle.svg</file>
+</qresource>
+</RCC>

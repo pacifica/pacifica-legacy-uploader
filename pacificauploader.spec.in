@@ -1,0 +1,79 @@
+#work around go not supported by rpm
+
+%global debug_package %{nil}
+%global __spec_install_post /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot  \
+  /usr/lib/rpm/brp-compress
+
+Name: pacifica-uploader
+Version: @VERSION@
+Release: 1
+Summary: Pacifica Uploader Package.
+Group: System Environment/Base
+License: UNKNOWN
+Source: pacificauploader-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
+Requires: pacifica-auth
+BuildRequires: go, curl-devel, libpacificaauth-devel, go-pacifica-auth, sqlite-devel, libarchive-devel
+
+%{!?_qt4_qmake: %define _qt4_qmake qmake}
+
+%{!?dist: %define dist .el5}
+
+%if %(test "x%{dist}" = 'x.el6' && echo 1 || echo 0)
+        %define pythondir python2.6
+BuildRequires: qt-devel, qtwebkit-devel
+%else
+	%if %(test x`echo "%{dist}" | cut -c1-3` = 'x.fc' && echo 1 || echo 0)
+       		%define pythondir python2.6
+BuildRequires: qt-devel, qtwebkit-devel
+	%else
+       		%define pythondir python2.4
+BuildRequires: qt47-devel, qt47-webkit-devel
+	%endif
+%endif
+
+%description
+Pacifica Uploader Package
+
+%prep
+%setup -q -n pacificauploader-@VERSION@
+
+%build
+cd qmake
+%{_qt4_qmake} -recursive
+make
+cd ..
+export GOROOT=/usr/lib64/go
+export GOPATH=`pwd`/go:/usr/lib64/go
+go install pacificauploaderd
+go install pacificauploaderuserd
+make check
+
+%install
+cd qmake
+make INSTALL_ROOT="$RPM_BUILD_ROOT" install
+cd ..
+mkdir -p "$RPM_BUILD_ROOT/usr/bin"
+cp pacificauploaderstatus "$RPM_BUILD_ROOT"/usr/bin
+chmod +x "$RPM_BUILD_ROOT"/usr/bin/pacificauploaderstatus
+cp go/bin/pacificauploaderd "$RPM_BUILD_ROOT"/usr/bin
+mkdir -p "$RPM_BUILD_ROOT/usr/libexec/pacifica/uploader"
+cp go/bin/pacificauploaderuserd "$RPM_BUILD_ROOT"/usr/libexec/pacifica/uploader/userd
+mkdir -p "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui"
+tar --exclude .svn -C go/src/pacificauploaderd/ui -cf - . | tar -C "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui" -xvf -
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+/usr/bin/*
+/etc/init.d/*
+/etc/xdg/autostart/pacificauploaderstatus.desktop
+/usr/libexec/pacifica/daemonize
+/usr/libexec/pacifica/userswitcher
+/usr/libexec/pacifica/uuidgen
+/usr/libexec/pacifica/pacificauploaderstatus
+/usr/libexec/pacifica/uploader/userd
+/usr/share/pacifica/uploader/*
+

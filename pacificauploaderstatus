@@ -1,0 +1,3 @@
+#!/bin/bash
+export LIBXCB_ALLOW_SLOPPY_LOCK=1
+exec /usr/libexec/pacifica/pacificauploaderstatus

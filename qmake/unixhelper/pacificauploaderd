@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# chkconfig:      345 90 10
+# Default-Stop:   0 1 2 6
+# description: This shell script starts and stops the Pacifica uploader service
+
+. /lib/lsb/init-functions
+
+EXECUTABLE="/usr/bin/pacificauploaderd"
+EXECUTABLE_OPTS="-system"
+PIDFILE="/var/run/pacificauploaderd.pid"
+
+type="$1"
+
+start(){
+    start_daemon -p "$PIDFILE" /usr/libexec/pacifica/daemonize -p "$PIDFILE" "$EXECUTABLE" $EXECUTABLE_OPTS
+}
+
+stop(){
+    killproc -p "$PIDFILE"
+}
+
+case "$type" in
+  start)
+	start
+	success="0"
+    	pidofproc -p "$PIDFILE" >/dev/null || success="$?"
+	if [ "$success" = 0 ]
+	then
+		log_success_msg "Starting the Pacifica Uploader"
+	else
+		log_failure_msg "Starting the Pacifica Uploader"
+	fi
+    ;;
+  stop)
+	stop
+	log_success_msg "Stopped the Pacifica Uploader"
+    ;;
+  restart)
+	stop
+	start
+	log_success_msg "Restarted the Pacifica Uploader"
+    ;;
+  status)
+    	pidofproc -p "$PIDFILE" > /dev/null
+    ;;
+  *)
+    log_failure_msg "$0: type \"$type\" unknown"
+    exit 2
+    ;;
+esac

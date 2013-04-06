@@ -1,0 +1,1 @@
+C:\Windows\Microsoft.NET\Framework\v3.5\csc.exe /out:..\..\..\build\pacificauploaderservice.exe /target:winexe /platform:anycpu /nologo /optimize /define:TRACE /recurse:*.cs

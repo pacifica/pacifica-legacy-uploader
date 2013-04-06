@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<?define UpgradeCode="54950539-6702-4354-95E9-960754FF6063"?>
+<?define Version="@VERSION@"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Name="Pacifica Uploader SDK @VERSION@"
+		Id="*"
+		UpgradeCode="$(var.UpgradeCode)"
+		Language="1033"
+		Codepage="1252"
+		Version="$(var.Version)"
+		Manufacturer="MyEMSL Team">
+		<Package Id="*"
+			Keywords="Installer"
+			Description="Pacifica Uploader SDK Installer"
+			Comments="Pacifica Uploader SDK"
+			Manufacturer="MyEMSL Team"
+			InstallerVersion="300"
+			Languages="1033"
+			Compressed="yes"
+			SummaryCodepage="1252"/>
+		<Upgrade Id="$(var.UpgradeCode)">
+			<!-- Detect any newer version of this product -->
+			<UpgradeVersion
+				Minimum="$(var.Version)"
+				IncludeMinimum="no"
+				OnlyDetect="yes"
+				Property="NEWPRODUCTFOUND"/>
+
+			<!-- Detect and remove any version equal to or older than this product -->
+			<UpgradeVersion
+				Maximum="$(var.Version)"
+				IncludeMaximum="yes"
+				OnlyDetect="no"
+				Property="OLDPRODUCTFOUND"/>
+		</Upgrade>
+
+		<Media Id="1"
+			Cabinet="pacificauploadersdk.cab"
+			EmbedCab="yes"/>
+
+		<Property Id="ALLUSERS" Value="1"/>
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="SDKDIR" Name="PacificaSDK">
+				<Directory Id="MSIDIR" Name="msi">
+					<Component Id="SDKMSI" Guid="F15FFC98-8F03-4415-BCB9-15BC7C67166D">
+						<File Id="pacificauploadermsi"
+							Name="pacificauploader.msi"
+							Source="pacificauploader.msi"
+							KeyPath="yes"/>
+						<File Id="pacificauploaderuimsi"
+							Name="pacificauploaderui.msi"
+							Source="pacificauploaderui.msi"
+							KeyPath="no"/>
+					</Component>
+				</Directory>
+				<Directory Id="BUILDDIR" Name="build">
+					<Component Id="SDKBUILD" Guid="0E6753CA-24A5-415A-88EE-D5C0DD8B0342">
+						<File Id="pacificauploaderallwxs"
+							Name="pacificauploaderall.wxs"
+							Source="pacificauploaderall.wxs"
+							KeyPath="yes"/>
+						<File Id="builduploaderpackage"
+							Name="builduploaderpackage.cmd"
+							Source="builduploaderpackage.cmd"
+							KeyPath="no"/>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature Id="Complete" Level="1">
+			<ComponentRef Id="SDKMSI"/>
+			<ComponentRef Id="SDKBUILD"/>
+		</Feature>
+
+		<Condition Message="You need to be an administrator to install this package.">Privileged</Condition>
+
+		<!-- Define a custom action --> 
+		<CustomAction Id="PreventDowngrading"
+			Error="Newer version already installed."/>
+
+		<InstallExecuteSequence>
+			<!-- Prevent downgrading -->
+			<Custom Action="PreventDowngrading"
+				After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+			<RemoveExistingProducts After="InstallFinalize" />
+		</InstallExecuteSequence>
+
+		<InstallUISequence>
+			<!-- Prevent downgrading -->
+			<Custom Action="PreventDowngrading"
+				After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+		</InstallUISequence>	
+	</Product>
+</Wix>

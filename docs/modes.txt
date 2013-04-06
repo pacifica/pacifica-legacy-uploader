@@ -1,0 +1,38 @@
+Modes of operation:
+
+* User:
+	* No flags.
+	* Runs as the user.
+	* One user daemon running as the user.
+	* Only user can authenticate.
+	* Checks for updates.
+	* Needs to be installed.
+
+* Developer:
+	* -devel flag.
+	* Runs as the user.
+	* One user daemon running as the user.
+	* Only user can authenticate.
+	* Does not check for updates.
+	* Runs out of build directory.
+
+* System:
+	* -system flag.
+	* Windows Specific:
+		* Runs as Local\System.
+		* Currently Supported:
+			* One user daemon running as Local\Pacifica Uploader.
+		* Possible User Daemon modes to Support:
+			* One user daemon running as Local\System.
+			* One user daemon running as Local\System + FILE_FLAG_B ACKUP_SEMANTICS.
+			* One user daemon running as a netwrk service.
+			* LsaLogonUser + S4U user switching without pw.
+			* Saved Kerberos hash for multiple user daemons.
+			* Saved passwords for multiple user daemons.
+		* Checks for updates.
+	* Linux Specific:
+		* Runs as Root.
+		* One user daemon per user.
+	* Any user can authenticate.
+	* Needs to be installed.
+

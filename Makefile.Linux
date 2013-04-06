@@ -1,0 +1,42 @@
+OS = Linux
+
+GOROOT := /usr/lib64/go
+GOPATH := $(CURDIR)/go:/usr/lib64/go
+QMAKE = qmake-qt47
+
+export GOROOT
+export GOPATH
+
+build-all:
+	echo Not implemented yet.
+
+build-prep:
+	cd qmake && ${QMAKE}
+
+build-go: pacificauploaderuserd pacificauploaderd
+
+pacificauploaderd: go/src/pacificauploaderd/common/version.go
+	go install pacificauploaderd
+
+pacificauploaderuserd:
+	go install pacificauploaderuserd
+
+build-qmake: build-prep
+	cd qmake && make
+
+check: check-common
+
+MOCKDIST=fedora-18-x86_64
+MOCK=/usr/bin/mock
+
+mock: dist
+	mkdir -p packages/"$(MOCKDIST)"/srpms
+	mkdir -p packages/"$(MOCKDIST)"/bin
+	$(MOCK) -r "$(MOCKDIST)" --buildsrpm --spec pacificauploader.spec --sources "`pwd`"
+	mv "/var/lib/mock/$(MOCKDIST)/result/"*.src.rpm packages/"$(MOCKDIST)"/srpms/
+	$(MOCK) -r "$(MOCKDIST)" --result "$(CURDIR)"/packages/"$(MOCKDIST)"/bin "$(CURDIR)"/packages/"$(MOCKDIST)"/srpms/*.src.rpm
+	if [ -f packages/"$(MOCKDIST)"/bin/mingw32-pacifica-uploader-zip-*.rpm ]; then \
+		rpm2cpio packages/"$(MOCKDIST)"/bin/mingw32-pacifica-uploader-zip-*.rpm  | cpio -idmv ./usr/share/pacifica/uploader/build-win32.zip;	\
+		mv ./usr/share/pacifica/uploader/build-win32.zip .; \
+		rm -rf usr; \
+	fi

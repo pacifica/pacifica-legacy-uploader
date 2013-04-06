@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Pacifica Uploader Status
+Comment=Display status information for the Pacifica Uploader
+Icon=pacificauploaderstatus
+Exec=pacificauploaderstatus
+Terminal=false
+Type=Application
+Categories=
+NoDisplay=true
+X-GNOME-Autostart-Delay=60

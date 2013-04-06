@@ -1,0 +1,319 @@
+<html>
+<head>
+	<title>Status</title>
+	<link rel="stylesheet" type="text/css" media="all" href="/ui/css/ui-lightness/jquery-ui-1.8.18.custom.css" />
+	<script src="/ui/js/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="/ui/js/jquery-ui-1.8.18.custom.min.js" type="text/javascript"></script>
+	<script src="/ui/js/jquery.scrollTo-1.4.2-min.js" type="text/javascript"></script>
+	<style type="text/css" media="all">
+		.pacifica_buildingblock {
+			display: none;
+			visibility: hidden;
+		}
+		.pacifica_hidden {
+			display: none;
+		}
+		.pacifica_invisible {
+			visibility: hidden;
+		}
+		.group_cont {
+			display: -webkit-box;
+			display: -moz-box;
+			display: box;
+			-webkit-box-orient: horizontal;
+			-webkit-box-pack: center;
+			-moz-box-orient: horizontal;
+			-moz-box-pack: center;
+			box-orient: horizontal;
+			box-pack: center;
+			width: 100%;
+			padding: 0;
+		}
+		.pacifica_center {
+//			display: block;
+//			margin-left: auto;
+//			margin-right: auto;
+padding: 0 0 0 0;
+		}
+		.pacifica_uploader_text_strike {
+			text-decoration: line-through;
+		}
+		.pacifica_uploader_text_bad {
+			color: red;
+		}
+		.pacifica_uploader_state_img {
+			padding: 0 20px 0 0;
+		}
+		.pacifica_uploader_bundle_file {
+			display: table;
+			padding: 10px 0 0 0;
+		}
+		.pacifica_uploader_bundle_file_row {
+			display: table-row;
+		}
+		.pacifica_uploader_bundle_file_header {
+			display: table-row;
+		}
+		.pacifica_uploader_bundle_file_header_cell {
+			border-bottom: 2px solid #000000; 
+			padding: 0 10px 0 10px;
+		}
+		.pacifica_uploader_bundle_file_row_cell {
+			border-bottom: 1px solid #000000; 
+			padding: 0 10px 0 10px;
+		}
+		.pacifica_uploader_group_row {
+			display: table-row;
+		}
+		.pacifica_uploader_group_header {
+			display: table-row;
+		}
+		.pacifica_uploader_group_header span {
+			display: table-cell;
+			border-bottom: 2px solid #000000; 
+			padding: 0 10px 0 10px;
+		}
+		.pacifica_uploader_group_row .cell {
+			display: table-cell;
+			border-bottom: 1px solid #000000; 
+			padding: 0 10px 0 10px;
+		}
+		.pacifica_uploader_group {
+			display: table;
+			padding: 0 0 0 0;
+			width: 100%;
+		}
+		.pacifica_right_buttonbox_outer {
+			float: right;
+		}
+		.pacifica_right_buttonbox {
+/*			float: right;
+
+			dispay: inline-block;
+			list-style-type: none;
+			padding: 0;
+			margin-left: 0;*/
+
+			list-style-type: none;
+			display: -webkit-box;
+			display: -moz-box;
+			display: box;
+			-webkit-box-orient: vertical;
+			-webkit-box-pack: center;
+			-webkit-box-align: stretch;
+			-moz-box-orient: vertical;
+			-moz-box-pack: center;
+			-moz-box-align: stretch;
+			box-orient: vertical;
+			box-pack: center;
+			box-align: stretch;
+			width: 100%;
+			padding: 0;
+		}
+		.pacifica_right_buttonbox li button {
+			width: 100%;
+		}
+		.groups .ui-button-text {
+			padding: 0 0 0 0;
+			width: 24px;
+			height: 24px;
+		}
+		.groups {
+			margin: 0;
+		}
+		.pacifica_uploader_bundle_file_row_cell_nonhidden {
+			display: table-cell;
+		}
+		.pacifica_uploader_bundle_file_row_cell_hidden {
+			display: none;
+		}
+	</style>
+	<script type="text/javascript">
+		function load_external(url) {
+			if(typeof(pacificaUploaderUI) != 'undefined') {
+				pacificaUploaderUI.loadLocation(url);
+			} else {
+				document.location = url
+			}
+		}
+		$(function() {
+			groups_dialog = $('.pacifica_uploader_group_dialog')
+			groups_dialog.dialog({
+				modal: true,
+				autoOpen: false
+			});
+			$.getJSON('/bundle/json/', function(data) {
+				$('.pacifica_uploader_bundles').text('')
+				for (var i in data) {
+					var id = data[i]
+					var c = $('.pacifica_buildingblock .pacifica_uploader_bundle_row').clone();
+					c.find('.id').text(id)
+					$.getJSON('/bundle/json/' + id, function(block, id) {return function(data) {
+						var desc;
+						switch(data.State) {
+						case 1:
+							desc = "Unsubmitted";
+							iclass = "pacifica_uploader_unsubmitted_img";
+							break;
+						case 2:
+							desc = "ToBundle";
+							iclass = "pacifica_uploader_tobundle_img";
+							break;
+						case 3:
+							desc = "ToUpload";
+							iclass = "pacifica_uploader_toupload_img";
+							break;
+						case 4:
+							desc = "Submitted";
+							iclass = "pacifica_uploader_tobundle_img";
+							break;
+						case 5:
+							desc = "Error";
+							iclass = "pacifica_uploader_error_img";
+							block.find('h3 a').addClass('ui-state-error');
+							break;
+						case 6:
+							desc = "Safe";
+							iclass = "pacifica_uploader_safe_img";
+							break;
+						}
+						var available = ""
+						if(data.Available) {
+							if(data.State == 4) {
+								iclass = "pacifica_uploader_available_img";
+							}
+							var fileurl = data.FileService;
+							if(fileurl.substring(fileurl.length-1) != '/') {
+								fileurl += '/';
+							}
+							fileurl += "transaction/" + data.Transaction + "/data/";
+							available = "<br/>Available: <a href=\"#\" onclick=\"load_external('" + fileurl + "')\"\">here</a>";
+						}
+						block.find('.submit').click(function() {
+							$.post('/bundle/json/' + id + '/submit/', function() {
+								window.location.reload();
+							});
+						});
+						block.find('.delete').click(function() {
+							$.post('/bundle/json/' + id + '/delete/', function() {
+								window.location.reload();
+							});
+						});
+						if(data.Submittable) {
+							block.find('.submit').removeClass('pacifica_hidden')
+						} else {
+							block.find('.submit').addClass('pacifica_hidden');
+						}
+						if(data.Deletable) {
+							block.find('.delete').removeClass('pacifica_hidden')
+						} else {
+							block.find('.delete').addClass('pacifica_hidden');
+						}
+						if(data.ErrorMsg != "") {
+							desc += "<br/> Reason: " + data.ErrorMsg;
+						}
+						block.find('.loader').html("State: " + desc + available)
+						var i = $('.pacifica_buildingblock .' + iclass).clone();
+						//i.text('');
+						i.appendTo(block.find('.stateimg'));
+						var groups = 0
+						for (var j in data.Files) {
+							var file = data.Files[j]
+							var f = $('.pacifica_buildingblock .pacifica_uploader_bundle_file_row').clone();
+							if(data.Files[j].DisableOnErrorMsg != "") {
+								f.addClass('pacifica_uploader_text_strike');
+								if(data.Files[j].DisableOnError != true) {
+									f.addClass('pacifica_uploader_text_bad');
+								}
+							}
+							if(data.Files[j].DisableOnError == false) {
+								f.find('.disable_on_error').text("-")
+							}
+							f.find('.pacifica_filename').text(file.PacificaFilename)
+							f.find('.local_filename').text(file.LocalFilename)
+							f.find('.groups').button({text: false, icons: {primary: 'ui-icon-search'}});
+							if(data.Files[j].Groups.length <= 0) {
+								f.find('.groups').addClass('pacifica_invisible')
+							} else {
+								groups += data.Files[j].Groups.length;
+								f.find('.groups').click(function(groups) {return function(){
+									groups_dialog.find('.pacifica_uploader_group_row').remove();
+									for (var g in groups) {
+										var e = $('.pacifica_buildingblock .pacifica_uploader_group_row').clone();
+										e.find('.type').text(groups[g].Type)
+										e.find('.name').text(groups[g].Name)
+										e.appendTo(groups_dialog.find('.pacifica_uploader_group'));
+									}
+									groups_dialog.dialog('open');
+								};}(data.Files[j].Groups));
+							}
+							f.appendTo(block.find('.pacifica_uploader_bundle_file'));
+						}
+						if(groups > 0) {
+							block.find('.pacifica_uploader_group_col').removeClass('pacifica_uploader_bundle_file_row_cell_hidden').addClass('pacifica_uploader_bundle_file_row_cell_nonhidden');
+						}
+					};}(c, id));
+					c.appendTo('#pacifica_uploader_bundles');
+				}
+				$('#pacifica_uploader_bundles .pacifica_uploader_bundle_row').accordion({fillSpace: true, collapsible: true, 'clearStyle': true, active: false})
+				$('#pacifica_uploader_bundles button').button();
+				//$('#pacifica_uploader_bundles button').button({icons: {primary: 'ui-icon-search'}});
+			});
+		});
+	</script>
+</head>
+<body>
+	<div class="pacifica_buildingblock">
+		<img class="pacifica_uploader_state_img pacifica_uploader_safe_img" width="20" height="24" src="img/safe.svg" type="image/svg+xml" />
+		<img class="pacifica_uploader_state_img pacifica_uploader_error_img" width="20" height="24" src="img/error.svg" type="image/svg+xml" />
+		<img class="pacifica_uploader_state_img pacifica_uploader_available_img" width="20" height="24" src="img/available.svg" type="image/svg+xml" />
+		<img class="pacifica_uploader_state_img pacifica_uploader_tobundle_img" width="20" height="24" src="img/tobundle.svg" type="image/svg+xml" />
+		<img class="pacifica_uploader_state_img pacifica_uploader_toupload_img" width="20" height="24" src="img/toupload.svg" type="image/svg+xml" />
+		<img class="pacifica_uploader_state_img pacifica_uploader_unsubmitted_img" width="20" height="24" src="img/unsubmitted.svg" type="image/svg+xml" />
+		<div class='pacifica_uploader_bundle_row'>
+<!--			<h3><a href="#"><span class="pacifica_text_valign_center id"></span><span class="stateimg" style="vertical-align:middle"></span></a></h3>-->
+			<h3><a href="#"><span class="stateimg" style="vertical-align:middle"></span><span class="pacifica_text_valign_center id"></a></h3>
+			<div>
+				<span class="pacifica_right_buttonbox_outer">
+				<ul class="pacifica_right_buttonbox">
+				<li><button class="pacifica_hidden submit">Submit</button></li>
+				<li><button class="pacifica_hidden delete">Delete</button></li>
+				</ul>
+				</span>
+				<div class="loader" style="overflow=scroll; max-height: 300px">
+					<br/>
+					<img src="img/ajax-loader.gif">Loading...
+				</div>
+				<div class='pacifica_uploader_bundle_file'>
+					<div class='pacifica_uploader_bundle_file_header'>
+						<span class="pacifica_uploader_bundle_file_header_cell pacifica_uploader_bundle_file_row_cell_nonhidden">Upload Filename</span>
+						<span class="pacifica_uploader_bundle_file_header_cell pacifica_uploader_bundle_file_row_cell_nonhidden">Local Filename</span>
+						<span class="pacifica_uploader_bundle_file_header_cell pacifica_uploader_bundle_file_row_cell_nonhidden"><a href="#" style="text-decoration:none" title="Disable On Error">DOE</a></span>
+						<span class="pacifica_uploader_group_col pacifica_uploader_bundle_file_header_cell pacifica_uploader_bundle_file_row_cell_hidden">Groups</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='pacifica_uploader_bundle_file_row'>
+			<span class="pacifica_filename pacifica_uploader_bundle_file_row_cell pacifica_uploader_bundle_file_row_cell_nonhidden"></span>
+			<span class="local_filename pacifica_uploader_bundle_file_row_cell pacifica_uploader_bundle_file_row_cell_nonhidden"></span>
+			<span class="disable_on_error pacifica_uploader_bundle_file_row_cell pacifica_uploader_bundle_file_row_cell_nonhidden" style="text-align:center">&#10003;</span>
+			<span class="pacifica_uploader_group_col pacifica_uploader_bundle_file_row_cell_hidden pacifica_uploader_bundle_file_row_cell" style="padding:0;"><div class="pacifica_center group_cont"><button class="pacifica_center groups">View</button></div></span>
+		</div>
+		<div class='pacifica_uploader_group_row'>
+			<span class="type cell"></span>
+			<span class="name cell"></span>
+		</div>
+	</div>
+	<div class="pacifica_uploader_group_dialog pacifica_hidden" title="Groups">
+		<div class='pacifica_uploader_group'>
+			<div class='pacifica_uploader_group_header'>
+				<span>Type</span>
+				<span>Name</span>
+			</div>
+		</div>
+	</div>
+	<div id="pacifica_uploader_bundles">
+	</div>
+</body>
+</html>

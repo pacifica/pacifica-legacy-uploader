@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Bundle Name="Pacifica Uploader @VERSION@"
+		Version="@VERSION@"
+		UpgradeCode="6DD66F10-0F1C-48F3-91B5-6769BF716B67">
+		<BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense"/>
+		<Chain>
+			<MsiPackage Id="pacificaauthconfig" Name="pacificaauthconfig" SourceFile="..\\config\\pacificaauthconfig.msi"/>
+			<MsiPackage Id="pacificaauth" Name="pacificaauth" SourceFile="..\\msi\\pacificaauth.msi"/>
+			<MsiPackage Id="pacificauploaderui" Name="pacificauploaderui" SourceFile="..\\msi\\pacificauploaderui.msi"/>
+			<MsiPackage Id="pacificauploader" Name="pacificauploader" SourceFile="..\\msi\\pacificauploader.msi"/>
+		</Chain>
+	</Bundle>
+</Wix>

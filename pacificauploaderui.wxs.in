@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Name="Pacifica Uploader UI @VERSION@"
+		UpgradeCode="60C8D521-F1F1-4CCC-8C60-DE890116B0B8"
+		Id="*"
+		Language="1033"
+		Codepage="1252"
+		Version="@VERSION@"
+		Manufacturer="MyEMSL Team">
+		
+		<Package Id="*"
+			Keywords="Installer"
+			Description="Pacifica Uploader UI Installer"
+			Comments="Pacifica Uploader UI Package."
+			Manufacturer="MyEMSL Team"
+			InstallerVersion="300"
+			Languages="1033"
+			Compressed="yes"
+			SummaryCodepage="1252"/>
+		
+		<Media Id="1"
+			Cabinet="pacificauploaderui.cab"
+			EmbedCab="yes"/>
+		
+		<Property Id="ALLUSERS" Value="1"/>
+		
+		<Property Id="START_VIA_REGISTRY" Value="1"/>
+		
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder" Name="PFiles">
+				<Directory Id="Pacifica" Name="Pacifica">
+					<Directory Id="INSTALLDIR" Name="Uploader">
+						<Component Id="PacificaUploaderStatusAutostart" Guid="2805CB11-82AA-4BB1-930C-0336F08B8519">
+							<RegistryKey Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\Run">
+								<RegistryValue Type="string" Name="Pacifica Uploader Status" Value="[INSTALLDIR]pacificauploaderstatus.exe"/>
+							</RegistryKey>
+							<Condition>START_VIA_REGISTRY</Condition>
+						</Component>
+						<Component Id="MainExecutable"
+							Guid="84616AEB-596D-4E08-90D6-1025B18703EB">
+							<File Id="pacificauploaderstatusexe"
+								Name="pacificauploaderstatus.exe"
+								Source="build/pacificauploaderstatus.exe"
+								KeyPath="yes"/>
+							<File Id="pacificaauthdll"
+								Name="pacificaauth.dll"
+								Source="build/pacificaauth.dll"
+								KeyPath="no"/>
+							<File Id="QtCore4dll"
+								Name="QtCore4.dll"
+								Source="build/QtCore4.dll"
+								KeyPath="no"/>
+							<File Id="QtGui4dll"
+								Name="QtGui4.dll"
+								Source="build/QtGui4.dll"
+								KeyPath="no"/>
+							<File Id="QtNetwork4dll"
+								Name="QtNetwork4.dll"
+								Source="build/QtNetwork4.dll"
+								KeyPath="no"/>
+							<File Id="QtWebKit4dll"
+								Name="QtWebKit4.dll"
+								Source="build/QtWebKit4.dll"
+								KeyPath="no"/>
+							<File Id="QtXml4dll"
+								Name="QtXml4.dll"
+								Source="build/QtXml4.dll"
+								KeyPath="no"/>
+							<File Id="QtSvg4dll"
+								Name="QtSvg4.dll"
+								Source="build/QtSvg4.dll"
+								KeyPath='no'/>
+						</Component>
+						<Component Id="CommonLibs"
+							Guid="04547079-E201-4587-BADC-1A56AC0DAF6A">
+							<File Id="mingwm10dll" Name="mingwm10.dll"
+								Source="build/mingwm10.dll"
+								KeyPath="no"/>
+							<File Id="sqlite3dll"
+								Name="sqlite3.dll"
+								Source="build/sqlite3.dll"
+								KeyPath="no"/>
+							<File Id="libgccsdw21dll"
+								Name="libgcc_s_dw2-1.dll"
+								Source="build/libgcc_s_dw2-1.dll"
+								KeyPath="no"/>
+							<File Id="libstdcpp6dll"
+								Name="libstdc++-6.dll"
+								Source="build/libstdc++-6.dll"
+								KeyPath="no"/>
+						</Component>
+						<Directory Id="ICONENGINESDIR" Name="iconengines">
+							<Component Id="IconEngines"
+								Guid="F342B42C-7A25-4F2C-865D-6DE8B459A643">
+								<File Id="qsvgicon4dll" Name="qsvgicon4.dll"
+									Source="build/iconengines/qsvgicon4.dll"
+									KeyPath="no"/>
+							</Component>
+						</Directory>
+						<Directory Id="IMAGEFORMATSDIR" Name="imageformats">
+							<Component Id="ImageFormats"
+								Guid="8612418F-11DD-463F-A4D5-A56E756462A6">
+								<File Id="qsvg4dll" Name="qsvg4.dll"
+									Source="build/imageformats/qsvg4.dll"
+									KeyPath="no"/>
+							</Component>
+						</Directory>
+					</Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+		
+		<Feature Id="Complete" Level="1">
+			<ComponentRef Id="MainExecutable"/>
+			<ComponentRef Id="CommonLibs"/>
+			<ComponentRef Id="IconEngines"/>
+			<ComponentRef Id="ImageFormats"/>
+			<ComponentRef Id="PacificaUploaderStatusAutostart"/>
+		</Feature>
+		
+		<MajorUpgrade DowngradeErrorMessage="Downgrade not available."/>
+		
+		<InstallExecuteSequence>
+			<ScheduleReboot After="InstallFinalize"/>
+		</InstallExecuteSequence>
+	</Product>
+</Wix>

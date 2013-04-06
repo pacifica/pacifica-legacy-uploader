@@ -1,0 +1,117 @@
+OS = Windows
+
+MINGWBINDIR = /c/QtSDK/mingw/bin
+QTBINDIR = /c/QtSDK/Desktop/Qt/4.8.1/mingw/bin
+QTPLUGINSDIR = /c/QtSDK/Desktop/Qt/4.8.1/mingw/plugins
+
+CURLDIR = /c/curl
+PKGCONFIG = /c/pkg-config
+PKGCONFIGBIN := $(PKGCONFIG)/bin
+MSISDK = /c/Program\ Files/Microsoft\ SDKs/Windows/v7.1
+
+#$WIX is defined in the WIX MSI installer as "C:\Program Files (x86)\WiX Toolset v3.6\"
+#MSys can properly use this path.
+#If WiX was installed manually (e.g. zip extract to c:\wix), uncomment:
+#WIX = /c/wix
+WIXBIN := $(WIX)bin
+
+#$PACIFICASDK is set by pacificaauthsdk.msi, however it uses backslashes and drive letters.
+#The go command is unable to deal with a mixture of Windows and Unix paths set in GOPATH, so we 
+#set it manually here.  If pacificaauthsdk.msi places PACIFICASDK in a different location
+#(it can), set it here.
+PACIFICASDK = /c/PacificaSDK
+
+SQLITEDIR = /c/sqlite3
+
+GOROOT = /c/Go
+GOROOTBIN := $(GOROOT)/bin
+
+-include Makefile.local
+
+export GOPATH := $(CURDIR)/go:$(PACIFICASDK)/go:$(GOROOT)
+export PKG_CONFIG_PATH := $(PACIFICASDK)/lib/pkgconfig
+export C_INCLUDE_PATH := $(SQLITEDIR)
+export LIBRARY_PATH := $(SQLITEDIR)
+export PATH := $(MINGWBINDIR):$(QTBINDIR):$(PKGCONFIGBIN):$(GOROOTBIN):$(WIXBIN):$(PATH)
+
+pacificauploader.wxs: pacificauploader.wxs.in
+	sed "s/@VERSION@/$(VERSION)/g" < pacificauploader.wxs.in > pacificauploader.wxs
+
+pacificauploaderui.wxs: pacificauploaderui.wxs.in
+	sed "s/@VERSION@/$(VERSION)/g" < pacificauploaderui.wxs.in > pacificauploaderui.wxs
+
+pacificauploadersdk.wxs: pacificauploadersdk.wxs.in
+	sed "s/@VERSION@/$(VERSION)/g" < pacificauploadersdk.wxs.in > pacificauploadersdk.wxs
+	
+pacificauploaderall.wxs: pacificauploaderall.wxs.in
+	sed "s/@VERSION@/$(VERSION)/g" < pacificauploaderall.wxs.in > pacificauploaderall.wxs
+
+build-prep-early:
+	test ! -d build && mkdir build || true
+	test ! -d build/iconengines && mkdir -p build/iconengines || true
+	test ! -d build/imageformats && mkdir -p build/imageformats || true
+	test ! -d msisdk && mkdir msisdk || true
+
+build-prep: build-prep-early
+	cd qmake && qmake
+	cp -u $(MSISDK)/include/msi.h msisdk
+	cp -u $(MSISDK)/include/msiquery.h msisdk
+	cp -u $(MSISDK)/lib/msi.lib msisdk
+	cp -u $(PACIFICASDK)/bin/pacificaauth.dll build
+	cp -u $(MINGWBINDIR)/mingwm10.dll build
+	cp -u $(MINGWBINDIR)/libgcc_s_dw2-1.dll build
+	cp -u $(MINGWBINDIR)/libstdc++-6.dll build
+	cp -u $(MINGWBINDIR)/libarchive-2.dll build
+	cp -u $(MINGWBINDIR)/libexpat-1.dll build
+	cp -u $(MINGWBINDIR)/liblzma-1.dll build
+	cp -u $(MINGWBINDIR)/libbz2-2.dll build
+	cp -u $(MINGWBINDIR)/libz-1.dll build
+	cp -u $(SQLITEDIR)/sqlite3.dll build
+	cp -u $(QTBINDIR)/qtcore4.dll build
+	cp -u $(QTBINDIR)/qtgui4.dll build
+	cp -u $(QTBINDIR)/qtnetwork4.dll build
+	cp -u $(QTBINDIR)/qtwebkit4.dll build
+	cp -u $(QTBINDIR)/qtxml4.dll build
+	cp -u $(QTBINDIR)/qtsvg4.dll build
+	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
+	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
+
+build-qmake:
+	cd qmake && make
+	cd qmake && make install
+
+build-go: pacificauploaderuserd pacificauploaderd
+
+pacificauploaderd: build-prep-early go/src/pacificauploaderd/common/version.go
+	echo $(GOPATH)
+	go install pacificauploaderd
+	cp -u go/bin/pacificauploaderd.exe build
+
+pacificauploaderuserd: build-prep-early
+	echo $(GOPATH)
+	go install pacificauploaderuserd
+	cp -u go/bin/pacificauploaderuserd.exe build
+
+check: check-common
+
+build-csharp:
+	cd csharp/winhelper/PacificaUploaderService && cmd /c build.cmd
+
+build-final:
+	cp -u go/bin/pacificauploaderuserd.exe build
+
+build-all: build-prep build-qmake build-go build-csharp build-final
+
+msi: msis
+
+msis: clean all pacificauploader.wxs pacificauploaderui.wxs pacificauploadersdk.wxs pacificauploaderall.wxs
+	test -f pacificauploader.msi && rm pacificauploader.msi || true
+	test -f pacificauploaderui.msi && rm pacificauploaderui.msi || true
+	test -f pacificauploadersdk.msi && rm pacificauploadersdk.msi || true
+	heat dir "go\src\pacificauploaderd\ui" -cg PacificaUploaderUI -gg -sfrag -dr INSTALLDIR -var var.DaemonUI -out pacificauploaderuigen.wxs
+	candle -ext WiXNetFxExtension pacificauploader.wxs pacificauploaderuigen.wxs -dDaemonUI=go\src\pacificauploaderd\ui -ext WixUtilExtension
+	light -ext WiXNetFxExtension -out pacificauploader.msi pacificauploader.wixobj pacificauploaderuigen.wixobj -ext WixUtilExtension
+	candle pacificauploaderui.wxs
+	light -out pacificauploaderui.msi pacificauploaderui.wixobj -ext WixUtilExtension
+	candle pacificauploadersdk.wxs
+	light -out pacificauploadersdk.msi pacificauploadersdk.wixobj
