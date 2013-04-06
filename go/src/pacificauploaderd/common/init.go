@@ -64,8 +64,8 @@ func Init() {
 	if System && BaseDir == DefaultBaseDirGet() {
 		BaseDir = DefaultSystemBaseDirGet()
 	}
-	oldname := strings.Replace(BaseDir, 'pacifica', 'myemsl', -1)
-	oldname = strings.Replace(oldname, 'Pacifica', 'MyEMSL', -1)
+	oldname := strings.Replace(BaseDir, "pacifica", "myemsl", -1)
+	oldname = strings.Replace(oldname, "Pacifica", "MyEMSL", -1)
 //FIXME Old migration code. Remove someday.
 	fi, err := os.Stat(oldname)
 	if err == nil && fi.IsDir() {
@@ -92,7 +92,7 @@ func Init() {
 			os.Exit(-1)
 		}
 	}
-	_, err := os.Stat(BaseDir)
+	_, err = os.Stat(BaseDir)
 	if err != nil {
 		log.Printf("The specified basedir is not valid, %v\n", err)
 	}
