@@ -66,6 +66,9 @@ tar --exclude .svn -C go/src/pacificauploaderd/ui -cf - . | tar -C "$RPM_BUILD_R
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+/usr/bin/killall myemsluploaderd 2>/dev/null || true
+
 %files
 %defattr(-,root,root)
 /usr/bin/*

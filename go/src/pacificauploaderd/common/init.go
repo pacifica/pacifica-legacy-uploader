@@ -64,13 +64,43 @@ func Init() {
 	if System && BaseDir == DefaultBaseDirGet() {
 		BaseDir = DefaultSystemBaseDirGet()
 	}
+//FIXME Old migration code. Remove someday.
 	oldname := strings.Replace(BaseDir, "pacifica", "myemsl", -1)
 	oldname = strings.Replace(oldname, "Pacifica", "MyEMSL", -1)
-//FIXME Old migration code. Remove someday.
 	fi, err := os.Stat(oldname)
 	if err == nil && fi.IsDir() {
-		log.Printf("This system needs to be migrated. Bailing.\n")
-		os.Exit(-1)
+		fi, err := os.Stat(oldname)
+		if err != nil {
+			log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+			os.Exit(-1)
+		}
+		if !fi.IsDir() {
+			log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+			os.Exit(-1)
+		}
+		file, err := os.Open(oldname)
+		if err != nil {
+			log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+			os.Exit(-1)
+		}
+		os.MkdirAll(BaseDir, 0755)
+		names, err := file.Readdirnames(-1)
+		if err != nil {
+			log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+			os.Exit(-1)
+		}
+		for _, n := range names {
+			err = os.Rename(filepath.Join(oldname, n), filepath.Join(BaseDir, n))
+			if err != nil {
+				log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+				os.Exit(-1)
+			}
+		}
+		err = os.Remove(oldname)
+		if err != nil {
+			log.Printf("This system needs to be migrated but cant. Error %v.\n", err)
+			os.Exit(-1)
+		}
 	}
 //FIXME End of old migration code.
 	os.MkdirAll(BaseDir, 0755)
