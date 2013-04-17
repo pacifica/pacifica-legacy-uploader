@@ -3,9 +3,9 @@ package common
 import (
 	"fmt"
 	"log"
-	"pacifica/getmodule"
 	"os"
 	"os/exec"
+	"pacifica/getmodule"
 	"path/filepath"
 )
 
@@ -101,7 +101,7 @@ func UuidgenPathGet() string {
 		fmt.Println("Failed to get installed dir.", err)
 		return "."
 	}
-	path = filepath.Join(path, "pacificauuidgen.exe")
+	path = filepath.Join(path, "uuidgen.exe")
 	log.Printf("UuidgenPathGet returning %s", path)
 	return path
 }
