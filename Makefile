@@ -25,17 +25,14 @@ rpms: rpm
 
 check-common: test-archiver
 	
-test-all: test-archiver
+run-tests: build-tests
+	cmd /c run-tests.bat
 
-test-archiver:
-	go test archiver
+build-tests: build-all
+	cd build; go test -c archiver; \
+		go test -c pacificauploaderd/common; \
+		go test -c sqlite
 	
-test-sqlite:
-	go test sqlite
-	
-test-common:
-	go test "pacificauploaderd/common"
-
 clean:
 	cd qmake && make clean || true
 	rm -rf build
