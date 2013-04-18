@@ -32,6 +32,9 @@ test-archiver:
 	
 test-sqlite:
 	go test sqlite
+	
+test-common:
+	go test "pacificauploaderd/common"
 
 clean:
 	cd qmake && make clean || true
