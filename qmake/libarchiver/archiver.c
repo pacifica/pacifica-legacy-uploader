@@ -1,9 +1,3 @@
-// Package archiver provides tar capabilies.
-package archiver
-/*
-#cgo LDFLAGS: -larchive
-#cgo windows CFLAGS: -fno-stack-check -fno-stack-protector -mno-stack-arg-probe
-
 #define _XOPEN_SOURCE 500
 #include <unistd.h>
 #include <errno.h>
@@ -112,38 +106,3 @@ cleanup:
 	archive_write_close(archiveWriter);
 	return 0; 
 }
-
-void write_EOT(int fd, long size)
-{
-   char eot_block[1024];
-   long extra = 512 - size % 512;
-   if(extra > 511)
-   {
-      extra = 0;
-   }
-
-   memset(eot_block, 0, 1024);
-   if(extra)
-   {
-      write(fd, eot_block, extra);
-   }
-   write(fd, eot_block, 1024);
-}
-*/
-import "C"
-import (
-	"unsafe"
-)
-
-func write_EOT(fd int, size int64) {
-    C.write_EOT(C.int(fd), C.long(size))
-}
-
-func archive(tar int, sourcefile int, src string, size int64, mtime int64) int {
-    srcName := C.CString(src)
-    defer C.free(unsafe.Pointer(srcName))
-
-    error := C.archive(C.int(tar), C.int(sourcefile), srcName, C.long(size), C.long(mtime))
-    return int(error)
-}
-
