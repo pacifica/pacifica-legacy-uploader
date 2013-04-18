@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS = gui
+SUBDIRS = gui libarchiver
 unix {
 	SUBDIRS += unixhelper unixuserswitcher uuidgen
 }
