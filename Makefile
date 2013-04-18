@@ -23,8 +23,15 @@ rpm: dist
 
 rpms: rpm
 
-check-common:
-	go test archiver -c
+check-common: test-archiver
+	
+test-all: test-archiver
+
+test-archiver:
+	go test archiver
+	
+test-sqlite:
+	go test sqlite
 
 clean:
 	cd qmake && make clean || true

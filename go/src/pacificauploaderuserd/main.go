@@ -1,14 +1,14 @@
 package main
 
 import (
-	"os"
-	"fmt"
 	"flag"
+	"fmt"
 	"net/rpc"
+	"os"
 	"pacifica/pipepair"
 )
 
-type Server struct {}
+type Server struct{}
 
 var (
 	user string
