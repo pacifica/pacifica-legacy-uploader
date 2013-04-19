@@ -8,6 +8,8 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+#include "archiver.h"
+
 #ifdef WIN32
 #define read _read
 #define write _write
@@ -41,8 +43,9 @@ static int header_close(struct archive *a, void *data)
 	return 0;
 }
 
-#define BUFFSIZE 1024 * 1024
-int archive(int tarFD, int fileFD, const char * srcName, long size, long mtime )
+//FIXME  allocate buffer via malloc to make it bigger.
+#define BUFFSIZE 1024
+int pacifica_uploader_server_archiver(int tarFD, int fileFD, const char * srcName, long size, long mtime )
 {
 	int                      res;
 	CallbackData             cbd;

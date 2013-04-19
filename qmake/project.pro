@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS = gui libarchiver
+SUBDIRS = gui libpacificauploaderserver
 unix {
 	SUBDIRS += unixhelper unixuserswitcher uuidgen
 }
