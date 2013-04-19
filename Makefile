@@ -23,12 +23,10 @@ rpm: dist
 
 rpms: rpm
 
-check-common: test-archiver
+check-common: run-tests
 	
-run-tests: build-tests
-	cmd /c run-tests.bat
-
-build-tests: build-all
+build-tests:
+	mkdir -p build
 	cd build; go test -c archiver; \
 		go test -c pacificauploaderd/common; \
 		go test -c sqlite

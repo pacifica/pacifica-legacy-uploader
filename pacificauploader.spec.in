@@ -48,6 +48,7 @@ export GOROOT=/usr/lib64/go
 export GOPATH=`pwd`/go:/usr/lib64/go
 go install pacificauploaderd
 go install pacificauploaderuserd
+make build-tests
 make check
 
 %install
@@ -71,6 +72,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
+%{_libdir}/*
 /usr/bin/*
 /etc/init.d/*
 /etc/xdg/autostart/pacificauploaderstatus.desktop

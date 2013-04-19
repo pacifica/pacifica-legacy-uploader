@@ -40,3 +40,10 @@ mock: dist
 		mv ./usr/share/pacifica/uploader/build-win32.zip .; \
 		rm -rf usr; \
 	fi
+
+run-tests: build-tests
+	cd build; \
+	archiver.test \
+	sqlite.test \
+	common.test
+

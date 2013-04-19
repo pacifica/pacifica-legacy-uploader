@@ -30,10 +30,19 @@ GOROOTBIN := $(GOROOT)/bin
 
 export GOPATH := $(CURDIR)/go:$(PACIFICASDK)/go:$(GOROOT)
 export PKG_CONFIG_PATH := $(PACIFICASDK)/lib/pkgconfig
-export C_INCLUDE_PATH := $(SQLITEDIR)
-export LIBRARY_PATH := $(SQLITEDIR)
+export C_INCLUDE_PATH := $(SQLITEDIR):$(CURDIR)/qmake/libpacificauploaderserver
+export LIBRARY_PATH := $(SQLITEDIR):$(CURDIR)/qmake/libpacificauploaderserver/debug
 export PATH := $(MINGWBINDIR):$(QTBINDIR):$(PKGCONFIGBIN):$(GOROOTBIN):$(WIXBIN):$(PATH)
 
+printsettings:
+	@echo CURLDIR="$(CURLDIR)"
+	@echo CURLDLLS="$(CURLDLLS)"
+	@echo MINGWBINDIR="$(MINGWBINDIR)"
+	@echo GOPATH=$(GOPATH)
+	@echo PATH="$(PATH)"
+	@echo LIBRARY_PATH="$(LIBRARY_PATH)"
+	@echo C_INCLUDE_PATH="$(C_INCLUDE_PATH)"
+	
 pacificauploader.wxs: pacificauploader.wxs.in
 	sed "s/@VERSION@/$(VERSION)/g" < pacificauploader.wxs.in > pacificauploader.wxs
 
@@ -94,17 +103,21 @@ pacificauploaderuserd: build-prep-early
 
 check: check-common
 
+run-tests: build-tests
+	cmd /c run-tests.bat
+
+
 build-csharp:
 	cd csharp/winhelper/PacificaUploaderService && cmd /c build.cmd
 
 build-final:
 	cp -u go/bin/pacificauploaderuserd.exe build
 
-build-all: build-prep build-qmake build-go build-csharp build-final
+build-all: build-prep build-qmake build-go build-csharp build-tests build-final
 
 msi: msis
 
-msis: clean all pacificauploader.wxs pacificauploaderui.wxs pacificauploadersdk.wxs pacificauploaderall.wxs
+msis: clean all pacificauploader.wxs pacificauploaderui.wxs pacificauploadersdk.wxs pacificauploaderall.wxs check
 	test -f pacificauploader.msi && rm pacificauploader.msi || true
 	test -f pacificauploaderui.msi && rm pacificauploaderui.msi || true
 	test -f pacificauploadersdk.msi && rm pacificauploadersdk.msi || true
