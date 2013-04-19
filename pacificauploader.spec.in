@@ -46,6 +46,8 @@ make
 cd ..
 export GOROOT=/usr/lib64/go
 export GOPATH=`pwd`/go:/usr/lib64/go
+export C_INCLUDE_PATH=`pwd`/qmake/libpacificauploaderserver
+export LIBRARY_PATH=`pwd`/qmake/libpacificauploaderserver/debug
 go install pacificauploaderd
 go install pacificauploaderuserd
 make build-tests

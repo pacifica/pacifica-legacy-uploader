@@ -6,6 +6,8 @@ QMAKE = qmake-qt47
 
 export GOROOT
 export GOPATH
+export C_INCLUDE_PATH := $(CURDIR)/qmake/libpacificauploaderserver
+export LIBRARY_PATH := $(CURDIR)/qmake/libpacificauploaderserver/debug
 
 build-all:
 	echo Not implemented yet.
@@ -42,8 +44,9 @@ mock: dist
 	fi
 
 run-tests: build-tests
+	export LD_LIBRARY_PATH=`pwd`/qmake/libpacificauploaderserver/debug; \
 	cd build; \
-	archiver.test \
-	sqlite.test \
-	common.test
+	./archiver.test && \
+	./sqlite.test # && \
+	# ./common.test
 
