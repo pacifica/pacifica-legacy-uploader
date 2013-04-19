@@ -62,6 +62,10 @@
 								Name="pacificauploaderuserd.exe"
 								Source="build/pacificauploaderuserd.exe"
 								KeyPath="no"/>
+							<File Id="pacificauploaderserverdll"
+								Name="pacificauploaderuserserverdll"
+								Source="build/pacificauploaderserver.dll"
+								KeyPath="no"/>
 							<!--<File Id="pacificauploaderuserswitcher.exe"
 								Name="pacificauploaderuserswitcher.exe"
 								Source="build/pacificauploaderuserswitcher.exe"
