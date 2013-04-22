@@ -23,10 +23,16 @@ PACIFICASDK = /c/PacificaSDK
 
 SQLITEDIR = /c/sqlite3
 
+QMAKE ?= qmake
+
 GOROOT = /c/Go
 GOROOTBIN := $(GOROOT)/bin
 
 -include Makefile.local
+
+ARCHIVEDLLS ?= libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
+GCCDLLS ?= libgcc_s_dw2-1.dll mingwm10.dll libstdc++-6.dll
+QTDLLS ?= QtCore4.dll qtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll QtSvg4.dll
 
 export GOPATH := $(CURDIR)/go:$(PACIFICASDK)/go:$(GOROOT)
 export PKG_CONFIG_PATH := $(PACIFICASDK)/lib/pkgconfig
@@ -62,28 +68,17 @@ build-prep-early:
 	test ! -d msisdk && mkdir msisdk || true
 
 build-prep: build-prep-early
-	cd qmake && qmake
+	cd qmake && $(QMAKE) -recursive
 	cp -u $(MSISDK)/include/msi.h msisdk
 	cp -u $(MSISDK)/include/msiquery.h msisdk
 	cp -u $(MSISDK)/lib/msi.lib msisdk
 	cp -u $(PACIFICASDK)/bin/pacificaauth.dll build
-	cp -u $(MINGWBINDIR)/mingwm10.dll build
-	cp -u $(MINGWBINDIR)/libgcc_s_dw2-1.dll build
-	cp -u $(MINGWBINDIR)/libstdc++-6.dll build
-	cp -u $(MINGWBINDIR)/libarchive-2.dll build
-	cp -u $(MINGWBINDIR)/libexpat-1.dll build
-	cp -u $(MINGWBINDIR)/liblzma-1.dll build
-	cp -u $(MINGWBINDIR)/libbz2-2.dll build
-	cp -u $(MINGWBINDIR)/libz-1.dll build
-	cp -u $(SQLITEDIR)/sqlite3.dll build
-	cp -u $(QTBINDIR)/qtcore4.dll build
-	cp -u $(QTBINDIR)/qtgui4.dll build
-	cp -u $(QTBINDIR)/qtnetwork4.dll build
-	cp -u $(QTBINDIR)/qtwebkit4.dll build
-	cp -u $(QTBINDIR)/qtxml4.dll build
-	cp -u $(QTBINDIR)/qtsvg4.dll build
+	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
+	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
+	for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
+	cp -u $(SQLITEDIR)/sqlite3.dll build
 
 build-qmake:
 	cd qmake && make

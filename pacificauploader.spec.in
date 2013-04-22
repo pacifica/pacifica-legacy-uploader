@@ -33,6 +33,26 @@ BuildRequires: qt47-devel, qt47-webkit-devel
 	%endif
 %endif
 
+%if 0%{?_with_windows:1}
+	%global use_windows 1
+%else
+	%if 0%{?_without_windows:1}
+		%global use_windows 0
+	%else
+		%if %(test x`echo "%{dist}" | cut -c1-3` = 'x.fc' && echo 1 || echo 0)
+			#global use_windows 1
+			%global use_windows 0
+		%else
+			%global use_windows 0
+		%endif
+	%endif
+%endif
+
+%if %{use_windows}
+%global mingw32_root /usr/i686-w64-mingw32/sys-root/mingw
+BuildRequires: mingw32-pkg-config mingw32-qt mingw32-libarchive mingw32-qtsolutionsservice-devel mingw32-libpacificaauth-devel wine zip unzip
+%endif
+
 %description
 Pacifica Uploader Package
 
@@ -40,6 +60,15 @@ Pacifica Uploader Package
 %setup -q -n pacificauploader-@VERSION@
 
 %build
+%if %{use_windows}
+make clean
+mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-prep build-qmake
+rm -f build-win32.zip
+zip -r build-win32.zip build
+#pushd scripts
+#zip -r ../build-win32.zip bundle.bat
+#popd
+%endif
 cd qmake
 %{_qt4_qmake} -recursive
 make
