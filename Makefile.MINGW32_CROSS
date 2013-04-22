@@ -3,8 +3,10 @@ QMAKE = i686-w64-mingw32-qmake-qt4
 ARCHIVE = `pkg-config --cflags --libs libarchive`
 ARCHIVEDIR = `pkg-config --variable exec_prefix libarchive`
 
-MINGWBINDIR = $(CURLDIR)/bin
-QTBINDIR ?= $(CURLDIR)/bin
+MINGWBINDIR = $(ARCHIVEDIRDIR)/bin
+MSISDK = $(ARCHIVEDIR)
+QTBINDIR ?= $(ARCHIVEDIR)/bin
+MSILIBS = libmsi.a
 
 ARCHIVEDLLS = libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
 GCCDLLS = libgcc_s_sjlj-1.dll libstdc++-6.dll

@@ -7,7 +7,6 @@ QTPLUGINSDIR = /c/QtSDK/Desktop/Qt/4.8.1/mingw/plugins
 CURLDIR = /c/curl
 PKGCONFIG = /c/pkg-config
 PKGCONFIGBIN := $(PKGCONFIG)/bin
-MSISDK = /c/Program\ Files/Microsoft\ SDKs/Windows/v7.1
 
 #$WIX is defined in the WIX MSI installer as "C:\Program Files (x86)\WiX Toolset v3.6\"
 #MSys can properly use this path.
@@ -33,6 +32,10 @@ GOROOTBIN := $(GOROOT)/bin
 ARCHIVEDLLS ?= libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
 GCCDLLS ?= libgcc_s_dw2-1.dll mingwm10.dll libstdc++-6.dll
 QTDLLS ?= QtCore4.dll qtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll QtSvg4.dll
+MSIHEADERS ?= msi.h msiquery.h
+MSILIBS ?= msi.lib
+
+MSISDK ?= /c/Program\ Files/Microsoft\ SDKs/Windows/v7.1
 
 export GOPATH := $(CURDIR)/go:$(PACIFICASDK)/go:$(GOROOT)
 export PKG_CONFIG_PATH := $(PACIFICASDK)/lib/pkgconfig
@@ -41,8 +44,8 @@ export LIBRARY_PATH := $(SQLITEDIR):$(CURDIR)/qmake/libpacificauploaderserver/de
 export PATH := $(MINGWBINDIR):$(QTBINDIR):$(PKGCONFIGBIN):$(GOROOTBIN):$(WIXBIN):$(PATH)
 
 printsettings:
-	@echo CURLDIR="$(CURLDIR)"
-	@echo CURLDLLS="$(CURLDLLS)"
+	@echo ARCHIVEDIR="$(ARCHIVEDIR)"
+	@echo ARCHIVEDLLS="$(ARCHIVEDLLS)"
 	@echo MINGWBINDIR="$(MINGWBINDIR)"
 	@echo GOPATH=$(GOPATH)
 	@echo PATH="$(PATH)"
@@ -69,9 +72,8 @@ build-prep-early:
 
 build-prep: build-prep-early
 	cd qmake && $(QMAKE) -recursive
-	cp -u $(MSISDK)/include/msi.h msisdk
-	cp -u $(MSISDK)/include/msiquery.h msisdk
-	cp -u $(MSISDK)/lib/msi.lib msisdk
+	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p build; done
+	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p build; done
 	cp -u $(PACIFICASDK)/bin/pacificaauth.dll build
 	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
