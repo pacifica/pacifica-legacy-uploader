@@ -3,14 +3,18 @@ QMAKE = i686-w64-mingw32-qmake-qt4
 ARCHIVE = `pkg-config --cflags --libs libarchive`
 ARCHIVEDIR = `pkg-config --variable exec_prefix libarchive`
 
-MINGWBINDIR = $(ARCHIVEDIRDIR)/bin
+MINGWBINDIR = $(ARCHIVEDIR)/bin
 MSISDK = $(ARCHIVEDIR)
+PACIFICAAUTHDIR ?= $(ARCHIVEDIR)
 QTBINDIR ?= $(ARCHIVEDIR)/bin
 MSILIBS = libmsi.a
+QTPLUGINSDIR ?= $(ARCHIVEDIR)/lib/qt4/plugins
+SQLITEDIR ?= $(ARCHIVEDIR)/bin
 
-ARCHIVEDLLS = libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
+SQLITEDLLS ?= libsqlite3-0.dll
+ARCHIVEDLLS = libarchive-12.dll libxml2-2.dll liblzma-5.dll libbz2-1.dll 
 GCCDLLS = libgcc_s_sjlj-1.dll libstdc++-6.dll
-QTDLLS = QtCore4.dll QtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll libpng15-15.dll libsqlite3-0.dll libjpeg-62.dll QtSvg4.dll libtiff-5.dll
+QTDLLS = QtCore4.dll QtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll libpng15-15.dll libjpeg-62.dll QtSvg4.dll libtiff-5.dll
 
 GOROOT = /root/go
 GOROOTBIN = $(GOROOT)/bin

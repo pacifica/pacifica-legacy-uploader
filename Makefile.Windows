@@ -1,11 +1,12 @@
+-include Makefile.local
+
 OS = Windows
 
-MINGWBINDIR = /c/QtSDK/mingw/bin
-QTBINDIR = /c/QtSDK/Desktop/Qt/4.8.1/mingw/bin
-QTPLUGINSDIR = /c/QtSDK/Desktop/Qt/4.8.1/mingw/plugins
+MINGWBINDIR ?= /c/QtSDK/mingw/bin
+QTBINDIR ?= /c/QtSDK/Desktop/Qt/4.8.1/mingw/bin
+QTPLUGINSDIR ?= /c/QtSDK/Desktop/Qt/4.8.1/mingw/plugins
 
-CURLDIR = /c/curl
-PKGCONFIG = /c/pkg-config
+PKGCONFIG ?= /c/pkg-config
 PKGCONFIGBIN := $(PKGCONFIG)/bin
 
 #$WIX is defined in the WIX MSI installer as "C:\Program Files (x86)\WiX Toolset v3.6\"
@@ -18,22 +19,23 @@ WIXBIN := $(WIX)bin
 #The go command is unable to deal with a mixture of Windows and Unix paths set in GOPATH, so we 
 #set it manually here.  If pacificaauthsdk.msi places PACIFICASDK in a different location
 #(it can), set it here.
-PACIFICASDK = /c/PacificaSDK
+PACIFICASDK ?= /c/PacificaSDK
 
-SQLITEDIR = /c/sqlite3
+SQLITEDIR ?= /c/sqlite3
 
 QMAKE ?= qmake
 
-GOROOT = /c/Go
+GOROOT ?= /c/Go
 GOROOTBIN := $(GOROOT)/bin
 
--include Makefile.local
-
+SQLITEDLLS ?= sqlite3.dll
 ARCHIVEDLLS ?= libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
 GCCDLLS ?= libgcc_s_dw2-1.dll mingwm10.dll libstdc++-6.dll
 QTDLLS ?= QtCore4.dll qtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll QtSvg4.dll
 MSIHEADERS ?= msi.h msiquery.h
 MSILIBS ?= msi.lib
+
+PACIFICAAUTHDIR ?= $(PACIFICASDK)
 
 MSISDK ?= /c/Program\ Files/Microsoft\ SDKs/Windows/v7.1
 
@@ -47,6 +49,7 @@ printsettings:
 	@echo ARCHIVEDIR="$(ARCHIVEDIR)"
 	@echo ARCHIVEDLLS="$(ARCHIVEDLLS)"
 	@echo MINGWBINDIR="$(MINGWBINDIR)"
+	@echo QTBINDIR="$(QTBINDIR)"
 	@echo GOPATH=$(GOPATH)
 	@echo PATH="$(PATH)"
 	@echo LIBRARY_PATH="$(LIBRARY_PATH)"
@@ -70,17 +73,17 @@ build-prep-early:
 	test ! -d build/imageformats && mkdir -p build/imageformats || true
 	test ! -d msisdk && mkdir msisdk || true
 
-build-prep: build-prep-early
+build-prep: build-prep-early printsettings
 	cd qmake && $(QMAKE) -recursive
 	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p build; done
 	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p build; done
-	cp -u $(PACIFICASDK)/bin/pacificaauth.dll build
+	cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build
 	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
-	cp -u $(SQLITEDIR)/sqlite3.dll build
+	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
 
 build-qmake:
 	cd qmake && make
