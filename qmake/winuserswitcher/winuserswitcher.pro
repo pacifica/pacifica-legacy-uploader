@@ -9,6 +9,6 @@ CONFIG += release console
 win32 {
 	SOURCES = main.c
 	target.path = ../../build/
-	LIBS     += -ladvapi32 -lCrypt32
+	LIBS     += -ladvapi32 -lcrypt32
 	INSTALLS += target
 }

@@ -40,8 +40,7 @@ BuildRequires: qt47-devel, qt47-webkit-devel
 		%global use_windows 0
 	%else
 		%if %(test x`echo "%{dist}" | cut -c1-3` = 'x.fc' && echo 1 || echo 0)
-			#global use_windows 1
-			%global use_windows 0
+			%global use_windows 1
 		%else
 			%global use_windows 0
 		%endif
@@ -62,7 +61,9 @@ Pacifica Uploader Package
 %build
 %if %{use_windows}
 make clean
-mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-prep build-qmake
+mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-prep
+sed -i 's/LINK[ \t]*=[ \t]*gcc/LINK = i686-w64-mingw32-gcc/' qmake/libpacificauploaderserver/Makefile.Debug
+mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-qmake
 rm -f build-win32.zip
 zip -r build-win32.zip build
 #pushd scripts

@@ -9,6 +9,6 @@ CONFIG += release dll
 win32 {
 	SOURCES = main.c
 	target.path = ../../build/
-	LIBS     += -ladvapi32 -lShlwapi -lCrypt32 ../../msisdk/msi.lib
+	LIBS     += -ladvapi32 -lshlwapi -lcrypt32 ../../msisdk/msi.lib
 	INSTALLS += target
 }

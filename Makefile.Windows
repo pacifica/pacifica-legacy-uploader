@@ -75,8 +75,8 @@ build-prep-early:
 
 build-prep: build-prep-early printsettings
 	cd qmake && $(QMAKE) -recursive
-	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p build; done
-	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p build; done
+	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p msisdk; done
+	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p msisdk; done
 	cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build
 	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
@@ -84,6 +84,7 @@ build-prep: build-prep-early printsettings
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
 	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
+	test ! -f msisdk/msi.lib && cp -a msisdk/libmsi.a msisdk/msi.lib
 
 build-qmake:
 	cd qmake && make
