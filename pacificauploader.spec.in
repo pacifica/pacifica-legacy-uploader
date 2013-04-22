@@ -55,20 +55,30 @@ BuildRequires: mingw32-pkg-config mingw32-qt mingw32-libarchive mingw32-qtsoluti
 %description
 Pacifica Uploader Package
 
+%if %{use_windows}
+%package -n     mingw32-pacifica-uploader-zip
+Summary:        cross build for package for the Pacifica Uploader
+Group:          System Environment/Base
+
+%description -n mingw32-pacifica-uploader-zip
+cross build package for the Pacifica Uploader
+%endif
+
 %prep
 %setup -q -n pacificauploader-@VERSION@
 
 %build
 %if %{use_windows}
 make clean
-mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-prep
+mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-prep pacificauploaderall.wxs pacificauploadersdk.wxs pacificauploaderui.wxs pacificauploader.wxs
+
 sed -i 's/LINK[ \t]*=[ \t]*gcc/LINK = i686-w64-mingw32-gcc/' qmake/libpacificauploaderserver/Makefile.Debug
 mingw32-make UNAME=MINGW32_CROSS QMAKE=i686-w64-mingw32-qmake-qt4 build-qmake
 rm -f build-win32.zip
-zip -r build-win32.zip build
-#pushd scripts
-#zip -r ../build-win32.zip bundle.bat
-#popd
+zip -r build-win32.zip build pacificauploaderall.wxs pacificauploadersdk.wxs pacificauploaderui.wxs pacificauploader.wxs go/src/pacificauploaderd/ui
+pushd scripts
+zip -r ../build-win32.zip bundle.bat
+popd
 %endif
 cd qmake
 %{_qt4_qmake} -recursive
@@ -95,12 +105,22 @@ mkdir -p "$RPM_BUILD_ROOT/usr/libexec/pacifica/uploader"
 cp go/bin/pacificauploaderuserd "$RPM_BUILD_ROOT"/usr/libexec/pacifica/uploader/userd
 mkdir -p "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui"
 tar --exclude .svn -C go/src/pacificauploaderd/ui -cf - . | tar -C "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui" -xvf -
+%if %{use_windows}
+mkdir -p "$RPM_BUILD_ROOT/usr/share/pacifica/uploader"
+cp -a build-win32.zip "$RPM_BUILD_ROOT"/usr/share/pacifica/uploader/
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
 /usr/bin/killall myemsluploaderd 2>/dev/null || true
+
+%if %{use_windows}
+%files -n mingw32-pacifica-uploader-zip
+%defattr(-,root,root)
+/usr/share/pacifica/uploader/build-win32.zip
+%endif
 
 %files
 %defattr(-,root,root)
