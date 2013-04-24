@@ -97,7 +97,7 @@ rm -rf /tmp/gowin
 #FIXME work around go insisting on rebuilding windows .a files sometimes.
 cp -a /usr/lib64/go /tmp/gowin
 TMPPATH="$PATH"
-export PATH="/usr/share/go/crosscompiler/windows-386:$PATH"
+export PATH="/usr/share/go/crosscompiler/windows_386:$PATH"
 export CROSSCOMPILE_CFLAGS="-L`pwd`/build"
 make GOROOT=/tmp/gowin GOCROSS='go-windows-386' LIBRARY_PATH=`pwd`/build build-go
 cp -a go/bin/windows_386/pacificauploader*d.exe build
