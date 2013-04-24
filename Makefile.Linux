@@ -18,10 +18,10 @@ build-prep:
 build-go: pacificauploaderuserd pacificauploaderd
 
 pacificauploaderd: go/src/pacificauploaderd/common/version.go
-	go install pacificauploaderd
+	bash -c ". /usr/share/go/crosscompiler/crosscompile.bash; $(GOCROSS) install pacificauploaderd"
 
 pacificauploaderuserd:
-	go install pacificauploaderuserd
+	bash -c ". /usr/share/go/crosscompiler/crosscompile.bash; $(GOCROSS) install pacificauploaderuserd"
 
 build-qmake: build-prep
 	cd qmake && make

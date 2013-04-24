@@ -12,8 +12,8 @@ QTPLUGINSDIR ?= $(ARCHIVEDIR)/lib/qt4/plugins
 SQLITEDIR ?= $(ARCHIVEDIR)/bin
 
 SQLITEDLLS ?= libsqlite3-0.dll
-ARCHIVEDLLS = libarchive-12.dll libxml2-2.dll liblzma-5.dll libbz2-1.dll 
-GCCDLLS = libgcc_s_sjlj-1.dll libstdc++-6.dll
+ARCHIVEDLLS = libarchive-12.dll libxml2-2.dll liblzma-5.dll libbz2-1.dll
+GCCDLLS = libgcc_s_sjlj-1.dll libstdc++-6.dll libcrypto-10.dll iconv.dll
 QTDLLS = QtCore4.dll QtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll libpng15-15.dll libjpeg-62.dll QtSvg4.dll libtiff-5.dll
 
 GOROOT = /root/go
