@@ -49,7 +49,7 @@ BuildRequires: qt47-devel, qt47-webkit-devel
 
 %if %{use_windows}
 %global mingw32_root /usr/i686-w64-mingw32/sys-root/mingw
-BuildRequires: mingw32-pkg-config mingw32-qt mingw32-libarchive mingw32-qtsolutionsservice-devel mingw32-libpacificaauth-devel wine zip unzip
+BuildRequires: mingw32-pkg-config mingw32-qt mingw32-libarchive mingw32-qtsolutionsservice-devel mingw32-libpacificaauth-devel wine zip unzip mingw32-go-pacifica-auth
 %endif
 
 %description
