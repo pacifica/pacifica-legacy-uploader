@@ -114,12 +114,15 @@ func (self *watcher) processPaths() {
 //taking a major hit. One goroutine does not equal one OS thread...With Go1, all goroutines run on a single
 //thread using cooperative sheduling, but that can be tweaked using GOMAXPROCS, and we should see that
 //evolve over time...many people write programs with hundreds or thousands of goroutines without issue.
+//KMF comment 4/24//2013. This indeed is spawning threads faster then can be processed leading to memory leaks
+//and crashes.
 func (self *watcher) callFound(searchPath, foundPath string) {
 	if self.found == nil {
 		return
 	}
 	for _, f := range self.found {
-		go f(searchPath, foundPath)
+		//go f(searchPath, foundPath)
+		f(searchPath, foundPath)
 	}
 }
 
@@ -134,7 +137,8 @@ func (self *watcher) callWalked() {
 		return
 	}
 	for _, f := range self.walked {
-		go f()
+		//go f()
+		f()
 	}
 }
 
