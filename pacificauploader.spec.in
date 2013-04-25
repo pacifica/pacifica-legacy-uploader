@@ -117,6 +117,8 @@ mkdir -p "$RPM_BUILD_ROOT/usr/libexec/pacifica/uploader"
 cp go/bin/pacificauploaderuserd "$RPM_BUILD_ROOT"/usr/libexec/pacifica/uploader/userd
 mkdir -p "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui"
 tar --exclude .svn -C go/src/pacificauploaderd/ui -cf - . | tar -C "$RPM_BUILD_ROOT/usr/share/pacifica/uploader/ui" -xvf -
+mkdir -p "$RPM_BUILD_ROOT/etc/sysconfig"
+cp -a pacificauploaderd "$RPM_BUILD_ROOT"/etc/sysconfig/
 %if %{use_windows}
 mkdir -p "$RPM_BUILD_ROOT/usr/share/pacifica/uploader"
 cp -a build-win32.zip "$RPM_BUILD_ROOT"/usr/share/pacifica/uploader/
@@ -139,6 +141,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*
 /usr/bin/*
 /etc/init.d/*
+%config /etc/sysconfig/*
 /etc/xdg/autostart/pacificauploaderstatus.desktop
 /usr/libexec/pacifica/daemonize
 /usr/libexec/pacifica/userswitcher

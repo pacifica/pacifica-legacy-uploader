@@ -34,6 +34,7 @@ func usage() {
 }
 
 func processArgs() {
+	flag.BoolVar(&common.Profiler, "profiler", false, "Enable the profiler.")
 	flag.BoolVar(&common.Devel, "devel", false, "Run out of source tree.")
 	flag.BoolVar(&common.System, "system", false, "Run in system mode.")
 	flag.BoolVar(&disableAuto, "disable-auto", false, "Disable the auto uploader.")

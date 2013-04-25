@@ -201,8 +201,8 @@ func configInit() {
 
 	ConfigRun()
 
-	http.Handle("/config/", http.RedirectHandler("/ui/config.html", http.StatusMovedPermanently))
-	http.HandleFunc("/config/all/", configHandle)
+	web.ServMux.Handle("/config/", http.RedirectHandler("/ui/config.html", http.StatusMovedPermanently))
+	web.ServMux.HandleFunc("/config/all/", configHandle)
 
 	os.MkdirAll(filepath.Join(common.BaseDir, "config"), 0700)
 	if common.System && platform.PlatformGet() == platform.Windows {

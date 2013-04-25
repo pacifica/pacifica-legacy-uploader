@@ -9,6 +9,7 @@ import (
 )
 
 var defaultUI *uiServer
+var ServMux *http.ServeMux
 
 type UpdateInfo struct {
 	Update     bool
@@ -51,12 +52,14 @@ func update(w http.ResponseWriter, req *http.Request) {
 func webServerInit() {
 	defaultUI = new(uiServer)
 
-	http.Handle("/status/", http.RedirectHandler("/ui/status.html", http.StatusMovedPermanently))
-	http.HandleFunc("/auth/", authHandle)
-	http.Handle("/ui/", FileServer(http.FileServer(http.Dir(common.UiDirGet())), "/ui"))
-	http.HandleFunc("/update/", update)
+	ServMux = http.NewServeMux();
+
+	ServMux.Handle("/status/", http.RedirectHandler("/ui/status.html", http.StatusMovedPermanently))
+	ServMux.HandleFunc("/auth/", authHandle)
+	ServMux.Handle("/ui/", FileServer(http.FileServer(http.Dir(common.UiDirGet())), "/ui"))
+	ServMux.HandleFunc("/update/", update)
 }
 
 func ServerRun() {
-	http.ListenAndServe("localhost:39999", nil)
+	http.ListenAndServe("localhost:39999", ServMux)
 }

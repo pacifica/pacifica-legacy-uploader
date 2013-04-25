@@ -10,10 +10,12 @@ EXECUTABLE="/usr/bin/pacificauploaderd"
 EXECUTABLE_OPTS="-system"
 PIDFILE="/var/run/pacificauploaderd.pid"
 
+[ -r /etc/sysconfig/pacificauploaderd ] && . /etc/sysconfig/pacificauploaderd
+
 type="$1"
 
 start(){
-    start_daemon -p "$PIDFILE" /usr/libexec/pacifica/daemonize -p "$PIDFILE" "$EXECUTABLE" $EXECUTABLE_OPTS
+    start_daemon -p "$PIDFILE" /usr/libexec/pacifica/daemonize -p "$PIDFILE" "$EXECUTABLE" $EXECUTABLE_OPTS $UPLOADER_ARGS
 }
 
 stop(){

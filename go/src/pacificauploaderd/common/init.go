@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	Profiler bool
 	Devel    bool
 	System   bool
 	BaseDir  string

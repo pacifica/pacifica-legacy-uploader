@@ -136,8 +136,8 @@ func credsInit() (*CredsManager) {
 	cm := &CredsManager{}
 	cm.userCreds = make(map[string]*pacificaauth.Auth)
 	cm.outage = make(map[string]*time.Time)
-	http.HandleFunc("/passcreds/", func(w http.ResponseWriter, req *http.Request) { passcredsHandle(cm, w, req) })
-	http.HandleFunc("/status/xml/", func(w http.ResponseWriter, req *http.Request) { statusXmlHandle(cm, w, req) })
+	web.ServMux.HandleFunc("/passcreds/", func(w http.ResponseWriter, req *http.Request) { passcredsHandle(cm, w, req) })
+	web.ServMux.HandleFunc("/status/xml/", func(w http.ResponseWriter, req *http.Request) { statusXmlHandle(cm, w, req) })
 	os.MkdirAll(filepath.Join(common.BaseDir, "auth", "creds"), 0700)
 	err := os.RemoveAll(filepath.Join(common.BaseDir, "auth", "tmpcreds"))
 	if err != nil {

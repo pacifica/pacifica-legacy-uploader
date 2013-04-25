@@ -6,4 +6,5 @@ func Init() {
 	log.Println("Web subsystem init.")
 	authInit()
 	webServerInit()
+	profilerInit()
 }

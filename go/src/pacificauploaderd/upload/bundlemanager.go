@@ -1611,6 +1611,6 @@ func bundleManagerInit() *BundleManager {
 	if bm == nil {
 		return nil
 	}
-	http.HandleFunc("/bundle/json/", func(w http.ResponseWriter, req *http.Request) { bundleIdsHandle(bm, w, req) })
+	web.ServMux.HandleFunc("/bundle/json/", func(w http.ResponseWriter, req *http.Request) { bundleIdsHandle(bm, w, req) })
 	return bm
 }
