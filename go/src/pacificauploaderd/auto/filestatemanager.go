@@ -17,6 +17,16 @@ import (
 const (
 	_DATABASE_CODE_VER         = 1
 	_DATABASE_FILE_NAME string = "filestates.sdb"
+
+	sqlGetFileState = "SELECT id, last_modified, digest, full_path, last_seen, bundle_id, bundle_file_id, " +
+		"pass_off, user_name, rule_name, auto_added_to_bundle_time FROM file_states WHERE user_name=? AND " +
+		"rule_name=? AND full_path=? LIMIT 1;"
+	
+	sqlGetFileStatesByBundleFileId = "SELECT id FROM file_states WHERE bundle_file_id=?;"
+
+	sqlGetFileStateById = "SELECT id, last_modified, digest, full_path, last_seen, bundle_id, bundle_file_id, "+
+		"pass_off, user_name, rule_name, auto_added_to_bundle_time FROM file_states WHERE id=?;"
+
 )
 
 type autoPassOffState int32
@@ -88,12 +98,34 @@ type stateDatabase struct {
 	path  string
 	conn  *sqlite.Conn
 	mutex sync.Mutex
+	getFileStateStmt *sqlite.Stmt
+	getFileStatesByBundleFileIdStmt *sqlite.Stmt
+	getFileStateByIdStmt *sqlite.Stmt
 }
 
 func newStateDatabase(filename string) *stateDatabase {
 	self := new(stateDatabase)
 	self.path = filename
 	self.setupDatabase()
+
+	if s, err := self.conn.Prepare(sqlGetFileState); err != nil {
+		log.Fatalf("SQL statement %s prepare failed with error %v", sqlGetFileState, err)
+	} else {
+		self.getFileStateStmt = s
+	}
+
+	if s, err := self.conn.Prepare(sqlGetFileStatesByBundleFileId); err != nil {
+		log.Fatalf("getFileStatesByBundleFileId SQL %s failed with error %v", sqlGetFileStatesByBundleFileId, err)
+	} else {
+		self.getFileStatesByBundleFileIdStmt = s
+	}
+
+	if s, err := self.conn.Prepare(sqlGetFileStateById); err != nil {
+		log.Fatalf("SQL statement %s prepare failed with error %v", sqlGetFileStateById, err)
+	} else {
+		self.getFileStateByIdStmt = s
+	}
+
 	return self
 }
 
@@ -216,20 +248,10 @@ func (self *stateDatabase) getFileStateById(id int64) *fileState {
 	self.mutex.Lock()
 	defer self.mutex.Unlock()
 
-	sql := fmt.Sprintf("SELECT id, last_modified, digest, full_path, last_seen, bundle_id, bundle_file_id, "+
-		"pass_off, user_name, rule_name, auto_added_to_bundle_time FROM file_states WHERE id=%d;", id)
-
-	common.Dprintf("%s", sql)
-
-	s, err := self.conn.Prepare(sql)
+	s := self.getFileStateByIdStmt
+	err := s.Exec(id)
 	if err != nil {
-		log.Fatalf("SQL statement %s prepare failed with error %v", sql, err)
-	}
-	defer s.Finalize()
-
-	err = s.Exec()
-	if err != nil {
-		log.Fatalf("SQL statement %s execution failed with error %v", sql, err)
+		log.Fatalf("SQL statement %s execution failed with error %v", sqlGetFileStateById, err)
 	}
 
 	if !s.Next() {
@@ -261,14 +283,14 @@ func (self *stateDatabase) getFileStateById(id int64) *fileState {
 	if bundle_id != "" {
 		i, err := strconv.Atoi(bundle_id)
 		if err != nil {
-			log.Fatalf("SQL query %s returned unexpected bundle_id %s, error %v", sql, bundle_id, err)
+			log.Fatalf("SQL query %s returned unexpected bundle_id %s, error %v", sqlGetFileStateById, bundle_id, err)
 		}
 		fs.bundleId = &i
 	}
 	if bundle_file_id != "" {
 		i, err := strconv.Atoi(bundle_file_id)
 		if err != nil {
-			log.Fatalf("SQL query %s returned unexpected bundle_file_id %s, error %v", sql, bundle_file_id, err)
+			log.Fatalf("SQL query %s returned unexpected bundle_file_id %s, error %v", sqlGetFileStateById, bundle_file_id, err)
 		}
 		fs.bundleFileId = &i
 	}
@@ -286,19 +308,11 @@ func (self *stateDatabase) getFileState(userName, ruleName, fileName string) *fi
 	self.mutex.Lock()
 	defer self.mutex.Unlock()
 
-	sql := "SELECT id, last_modified, digest, full_path, last_seen, bundle_id, bundle_file_id, " +
-		"pass_off, user_name, rule_name, auto_added_to_bundle_time FROM file_states WHERE user_name=? AND " +
-		"rule_name=? AND full_path=? LIMIT 1;"
+	s := self.getFileStateStmt
 
-	s, err := self.conn.Prepare(sql)
+	err := s.Exec(userName, ruleName, fileName)
 	if err != nil {
-		log.Fatalf("SQL statement %s prepare failed with error %v", sql, err)
-	}
-	defer s.Finalize()
-
-	err = s.Exec(userName, ruleName, fileName)
-	if err != nil {
-		log.Fatalf("SQL statement %s execution failed with error %v", sql, err)
+		log.Fatalf("SQL statement %s execution failed with error %v", sqlGetFileState, err)
 	}
 
 	if !s.Next() {
@@ -331,14 +345,14 @@ func (self *stateDatabase) getFileState(userName, ruleName, fileName string) *fi
 	if bundle_id != "" {
 		i, err := strconv.Atoi(bundle_id)
 		if err != nil {
-			log.Fatalf("SQL query %s returned unexpected bundle_id %s, error %v", sql, bundle_id, err)
+			log.Fatalf("SQL query %s returned unexpected bundle_id %s, error %v", sqlGetFileState, bundle_id, err)
 		}
 		fs.bundleId = &i
 	}
 	if bundle_file_id != "" {
 		i, err := strconv.Atoi(bundle_file_id)
 		if err != nil {
-			log.Fatalf("SQL query %s returned unexpected bundle_file_id %s, error %v", sql, bundle_file_id, err)
+			log.Fatalf("SQL query %s returned unexpected bundle_file_id %s, error %v", sqlGetFileState, bundle_file_id, err)
 		}
 		fs.bundleFileId = &i
 	}
@@ -612,16 +626,11 @@ func (self *stateDatabase) getFileStatesProgressing() ([]string, []int, error) {
 func (self *stateDatabase) getFileStatesByBundleFileId(bfid int) ([]*fileState, error) {
 	self.mutex.Lock()
 
-	sql := fmt.Sprintf("SELECT id FROM file_states WHERE bundle_file_id=%d;", bfid)
-	s, err := self.conn.Prepare(sql)
-	if err != nil {
-		log.Fatalf("getFileStatesByBundleFileId SQL %s failed with error %v", sql, err)
-	}
-	defer s.Finalize()
+	s := self.getFileStatesByBundleFileIdStmt
 
-	err = s.Exec()
+	err := s.Exec(bfid)
 	if err != nil {
-		log.Fatalf("Exec %s failed, %v", sql, err)
+		log.Fatalf("Exec %s failed, %v", sqlGetFileStatesByBundleFileId, err)
 	}
 
 	ids := make([]int64, 0)

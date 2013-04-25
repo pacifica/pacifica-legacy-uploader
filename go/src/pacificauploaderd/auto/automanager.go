@@ -328,6 +328,10 @@ func (self *autoManager) monitorSubmitted() {
 			continue
 		}
 
+		if bState == upload.BundleState_Unsubmitted || bState == upload.BundleState_ToBundle || BundleState_Submitted {
+			continue
+		}
+
 		bfs, err := b.FilesGet()
 		if err != nil {
 			log.Printf("FileIdsGet() returned error %v", err)
