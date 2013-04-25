@@ -328,7 +328,8 @@ func (self *autoManager) monitorSubmitted() {
 			continue
 		}
 
-		if bState == upload.BundleState_Unsubmitted || bState == upload.BundleState_ToBundle || BundleState_Submitted {
+		if bState == upload.BundleState_Unsubmitted || bState == upload.BundleState_ToBundle || bState == upload.BundleState_Submitted {
+//FIXME This cuts out extra expensive checks when the state should not change. But, if state gets to submitted quickly and some files DOE'ed, then this can hold up files needlessly until state changes to ERROR or SUCCESS. Really, the check should be to check only once per bundle when state of bundle's DOE files aren't going to change. This means maintaining per bundle state in the db.
 			continue
 		}
 
