@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	DBCODEVER = 1
+	DBCODEVER = 2
 )
 
 var (
@@ -343,6 +343,8 @@ create table bundle_watches(
 create unique index filesi1 on files(bundle_id, myemsl_filename);
 create unique index groupsi1 on groups(file_id, type, name);
 create unique index bwi1 on bundle_watches(bundle_id, name);
+create index bundles_id ON bundles(id);
+create index files_id ON files(id);
 `, ";")
 		for _, sql := range schema {
 			if strings.TrimSpace(sql) == "" {
@@ -404,7 +406,24 @@ create unique index bwi1 on bundle_watches(bundle_id, name);
 
 	}
 	if ver < DBCODEVER {
-//FIXME when there are more then one schema version, put upgrade code here.
+		if ver == 1 {
+			schema := strings.Split("begin transaction;" +
+			                        "create index bundles_id ON bundles(id);" + 
+			                        "create index files_id ON files(id);" +
+			                        "update system set value = 2 where name=\"version\";" +
+			                        "commit;", ";")
+			for _, sql := range schema {
+				if strings.TrimSpace(sql) == "" {
+					continue
+				}
+				err = self.conn.Exec(sql + ";")
+				if err != nil {
+					log.Printf("Failed to upgrade schema! %v\nSQL: %s\n", err, sql)
+					os.Exit(1)
+				}
+			}
+			ver = 2;
+		}
 	}
 	if ver != DBCODEVER {
 		log.Printf("Bundle Manager Database needs to be upgraded(%v). I'm %v\n", ver, DBCODEVER)

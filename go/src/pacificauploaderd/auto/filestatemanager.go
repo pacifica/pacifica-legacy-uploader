@@ -10,12 +10,13 @@ import (
 	"platform"
 	"sqlite"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
 
 const (
-	_DATABASE_CODE_VER         = 1
+	_DATABASE_CODE_VER         = 2
 	_DATABASE_FILE_NAME string = "filestates.sdb"
 
 	sqlGetFileState = "SELECT id, last_modified, digest, full_path, last_seen, bundle_id, bundle_file_id, " +
@@ -188,6 +189,19 @@ func (self *stateDatabase) setupDatabase() {
 			log.Fatalf("%v\nSQL: %s\n", err, userBundlesSchema)
 		}
 
+		schema := strings.Split("create index file_states_full_path ON file_states(full_path);" +
+		                        "create index file_states_id ON file_states(id);", ";")
+		for _, sql := range schema {
+			if strings.TrimSpace(sql) == "" {
+				continue
+			}
+			err = self.conn.Exec(sql + ";")
+			if err != nil {
+				log.Printf("%v\nSQL: %s\n", err, sql)
+				os.Exit(1)
+			}
+		}
+
 		//Set the database version
 		err = self.conn.Exec("INSERT INTO system(name, value) VALUES(\"version\", \"" +
 			strconv.Itoa(int(_DATABASE_CODE_VER)) + "\");")
@@ -230,7 +244,24 @@ func (self *stateDatabase) setupDatabase() {
 		log.Fatalf("File manager database is too new(%v). Version is %v\n", ver, _DATABASE_CODE_VER)
 	}
 	if ver < _DATABASE_CODE_VER {
-		//Once needed upgrade the database here
+		if ver == 1 {
+			schema := strings.Split("begin transaction;" +
+			                        "create index file_states_full_path ON file_states(full_path);" + 
+			                        "create index file_states_id ON file_states(id);" +
+			                        "update system set value = 2 where name=\"version\";" +
+			                        "commit;", ";")
+			for _, sql := range schema {
+				if strings.TrimSpace(sql) == "" {
+					continue
+				}
+				err = self.conn.Exec(sql + ";")
+				if err != nil {
+					log.Printf("Failed to upgrade schema! %v\nSQL: %s\n", err, sql)
+					os.Exit(1)
+				}
+			}
+			ver = 2;
+		}
 	}
 	if ver != _DATABASE_CODE_VER {
 		log.Fatalf("File state manager database needs to be upgraded(%v). I'm %v\n", ver, _DATABASE_CODE_VER)
