@@ -84,7 +84,7 @@ build-prep: build-prep-early printsettings
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
 	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
-	test ! -f msisdk/msi.lib && cp -a msisdk/libmsi.a msisdk/msi.lib
+	test -f msisdk/msi.lib || cp -a msisdk/libmsi.a msisdk/msi.lib
 
 build-qmake:
 	cd qmake && make
