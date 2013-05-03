@@ -63,7 +63,7 @@
 								Source="build/pacificauploaderuserd.exe"
 								KeyPath="no"/>
 							<File Id="pacificauploaderserverdll"
-								Name="pacificauploaderuserserverdll"
+								Name="pacificauploaderserver.dll"
 								Source="build/pacificauploaderserver.dll"
 								KeyPath="no"/>
 							<!--<File Id="pacificauploaderuserswitcher.exe"
@@ -71,7 +71,7 @@
 								Source="build/pacificauploaderuserswitcher.exe"
 								KeyPath="no"/>-->
 							<File Id="uuidgenexe"
-								Name="pacificauuidgen.exe"
+								Name="uuidgen.exe"
 								Source="build/uuidgen.exe"
 								KeyPath="no"/>
 						</Component>
