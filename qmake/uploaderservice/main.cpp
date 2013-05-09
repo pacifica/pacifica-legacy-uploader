@@ -70,8 +70,7 @@ protected:
 		if(!process->waitForStarted())
 		{
 			logMessage("Error starting pacificauploaderd");
-			delete process;
-			process = NULL;
+			resetProcess();
 		}
 		
 		return process != NULL;
@@ -79,14 +78,20 @@ protected:
 	
 	void createEvents()
 	{	
+		// Registering the meta type for the enumerations will allow us to use
+		// them in the slot/signals below.
 		qRegisterMetaType<QProcess::ProcessError>("QProcess::ProcessError");
 		qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
+		qRegisterMetaType<QProcess::ProcessState>("QProcess::ProcessState");
 		
 		QObject::connect(dynamic_cast<QObject*>(process), SIGNAL(onProcessError(QProcess::ProcessError)),
 						 dynamic_cast<QObject*>(this), SLOT(onProcessError(QProcess::ProcessError)));
 						 
 		QObject::connect(dynamic_cast<QObject*>(process), SIGNAL(onProcessFinished(int, QProcess::ExitStatus)),
 						 dynamic_cast<QObject*>(this), SLOT(onProcessFinished(int, QProcess::ExitStatus)));
+		
+		QObject::connect(dynamic_cast<QObject*>(process), SIGNAL(stateChanged(QProcess::ProcessState)),
+						 dynamic_cast<QObject*>(this), SLOT(onProcessStateChanged(QProcess::ProcessState)));
 	}
 	
 	void onProcessFinished ( int exitCode, QProcess::ExitStatus exitStatus )
@@ -108,6 +113,25 @@ protected:
 	{
 		delete process;
 		process = NULL;
+	}
+	
+	void onProcessStateChanged ( QProcess::ProcessState newState )
+	{
+		QString output = QString("Process State Changed: ");
+		switch(newState)
+		{
+			case QProcess::NotRunning:
+				output += "Not Running";
+				break;
+			case QProcess::Starting:
+				output += "Starting";
+				break;
+			case QProcess::Running:
+				output += "Running";
+				break;
+		}		
+		
+		logMessage(output);
 	}
 	
 	/*
@@ -155,7 +179,7 @@ protected:
 		}
 		
 		process->terminate();
-		if(!process->waitForFinished())
+		if(!process->waitForFinished(500))
 		{
 			process->kill();
 		}
@@ -168,22 +192,10 @@ protected:
 		stopUploaderdProcess();
 	}
 
-	/*
-    void pause()
-    {
-		logMessage(QString("Pauseing Service"));
-    }
-
-    void resume()
-    {
-		logMessage(QString("Resuming Service"));
-    }*/
 
 private:
-	//QCoreApplication *app;
+	// The uploader process.
 	QProcess *process;
-	//QFile* pFile;
-    //TestService *daemon;
 };
 
 
