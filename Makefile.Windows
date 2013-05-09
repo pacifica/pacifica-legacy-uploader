@@ -43,7 +43,7 @@ export GOPATH := $(CURDIR)/go:$(PACIFICASDK)/go:$(GOROOT)
 export PKG_CONFIG_PATH := $(PACIFICASDK)/lib/pkgconfig
 export C_INCLUDE_PATH := $(SQLITEDIR):$(CURDIR)/qmake/libpacificauploaderserver
 export LIBRARY_PATH := $(SQLITEDIR):$(CURDIR)/qmake/libpacificauploaderserver/debug
-export PATH := $(MINGWBINDIR):$(QTBINDIR):$(PKGCONFIGBIN):$(GOROOTBIN):$(WIXBIN):$(PATH)
+export PATH := $(MINGWBINDIR):$(QTBINDIR):$(PKGCONFIGBIN):$(GOROOTBIN):$(WIXBIN):$(PACIFICASDK):$(PATH)
 
 printsettings:
 	@echo ARCHIVEDIR="$(ARCHIVEDIR)"
@@ -54,6 +54,7 @@ printsettings:
 	@echo PATH="$(PATH)"
 	@echo LIBRARY_PATH="$(LIBRARY_PATH)"
 	@echo C_INCLUDE_PATH="$(C_INCLUDE_PATH)"
+	@echo PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
 	
 pacificauploader.wxs: pacificauploader.wxs.in
 	sed "s/@VERSION@/$(VERSION)/g" < pacificauploader.wxs.in > pacificauploader.wxs
