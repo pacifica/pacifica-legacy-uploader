@@ -50,13 +50,10 @@ protected:
 		// build up path to the uploader process
 		QString basePath = app->applicationDirPath();
 		args << "-devel" <<"-basedir"<<basePath;
-		logMessage(QString("Changing Directories"));
-		//QDir::setPath(basePath);
-		//dirLocation.cd(basePath);
+		
 		QString uploaderdPath = basePath + "/pacificauploaderd.exe";
 		logMessage(QString("Starting Service\nProcess: " + uploaderdPath));
-		logMessage(QString("Present Working Dir: " + QDir::currentPath()));
-		
+				
 		// Create the new uploader process.
 		process = new QProcess();
 		process->setWorkingDirectory(basePath);
@@ -71,6 +68,10 @@ protected:
 		{
 			logMessage("Error starting pacificauploaderd");
 			resetProcess();
+		}
+		else
+		{
+			logMessage(QString("Process id: ") + QString::number((long)process->pid()));
 		}
 		
 		return process != NULL;
@@ -181,6 +182,7 @@ protected:
 		process->terminate();
 		if(!process->waitForFinished(500))
 		{
+			logMessage(QString("Killing process: ") + QString::number((long)process->pid()));
 			process->kill();
 		}
 		resetProcess();
