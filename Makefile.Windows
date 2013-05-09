@@ -32,6 +32,7 @@ SQLITEDLLS ?= sqlite3.dll
 ARCHIVEDLLS ?= libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
 GCCDLLS ?= libgcc_s_dw2-1.dll mingwm10.dll libstdc++-6.dll
 QTDLLS ?= QtCore4.dll qtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll QtSvg4.dll
+PACIFICASDKDLLS ?= QtSolutions_Service.dll
 MSIHEADERS ?= msi.h msiquery.h
 MSILIBS ?= msi.lib
 
@@ -82,6 +83,7 @@ build-prep: build-prep-early printsettings
 	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
 	for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
+	for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build; done
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
 	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
@@ -115,7 +117,7 @@ build-csharp:
 build-final:
 	cp -u go/bin/pacificauploaderuserd.exe build
 
-build-all: build-prep build-qmake build-go build-csharp build-tests build-final
+build-all: build-prep build-qmake build-go build-tests build-final
 
 msi: msis
 

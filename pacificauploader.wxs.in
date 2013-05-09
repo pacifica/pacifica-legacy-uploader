@@ -74,6 +74,10 @@
 								Name="uuidgen.exe"
 								Source="build/uuidgen.exe"
 								KeyPath="no"/>
+							<File Id="QtSolutionsServicedll"
+								Name="QtSolutions_Service.dll"
+								Source="build/QtSolutions_Service.dll"
+								KeyPath="no"/>
 						</Component>
 						<Component Id="CommonLibs" Guid="04547079-E201-4587-BADC-1A56AC0DAF6A">
 							<File Id="mingwm10dll"
