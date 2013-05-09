@@ -37,7 +37,12 @@ mock: dist
 	mkdir -p packages/"$(MOCKDIST)"/bin
 	$(MOCK) -r "$(MOCKDIST)" --buildsrpm --spec pacificauploader.spec --sources "`pwd`"
 	mv "/var/lib/mock/$(MOCKDIST)/result/"*.src.rpm packages/"$(MOCKDIST)"/srpms/
-	$(MOCK) -r "$(MOCKDIST)" --result "$(CURDIR)"/packages/"$(MOCKDIST)"/bin "$(CURDIR)"/packages/"$(MOCKDIST)"/srpms/*.src.rpm
+	$(MOCK) -r "$(MOCKDIST)" --result "$(CURDIR)"/packages/"$(MOCKDIST)"/bin "$(CURDIR)"/packages/"$(MOCKDIST)"/srpms/*.src.rpm; \
+	res=$$?; \
+	if [ $$res -ne 0 ]; then \
+		cat "$(CURDIR)"/packages/"$(MOCKDIST)"/bin/build.log; \
+		exit $$res; \
+	fi
 	if [ -f packages/"$(MOCKDIST)"/bin/mingw32-pacifica-uploader-zip-*.rpm ]; then \
 		rpm2cpio packages/"$(MOCKDIST)"/bin/mingw32-pacifica-uploader-zip-*.rpm  | cpio -idmv ./usr/share/pacifica/uploader/build-win32.zip;	\
 		mv ./usr/share/pacifica/uploader/build-win32.zip .; \

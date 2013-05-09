@@ -6,6 +6,7 @@ ARCHIVEDIR = `pkg-config --variable exec_prefix libarchive`
 MINGWBINDIR = $(ARCHIVEDIR)/bin
 MSISDK = $(ARCHIVEDIR)
 PACIFICAAUTHDIR ?= $(ARCHIVEDIR)
+PACIFICASDK ?= $(ARCHIVEDIR)
 QTBINDIR ?= $(ARCHIVEDIR)/bin
 MSILIBS = libmsi.a
 QTPLUGINSDIR ?= $(ARCHIVEDIR)/lib/qt4/plugins
