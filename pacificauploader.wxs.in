@@ -24,7 +24,9 @@
 			Cabinet="pacificauploader.cab"
 			EmbedCab="yes"/>
 
+		<!-- 
 		<PropertyRef Id="NETFRAMEWORK35"/>
+		-->
 		
 		<Property Id="ALLUSERS" Value="1"/>
 		
@@ -46,126 +48,42 @@
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
 				<Directory Id="Pacifica" Name="Pacifica">
 					<Directory Id="INSTALLDIR" Name="Uploader">
-						<Component Id="MainExecutable" Guid="C44A39F1-EDF8-4C0B-BC94-9FBF5B027530">
-							<!--<util:User Id="user"
-								CreateUser="yes"
-								Name="Pacifica Uploader"
-								Password="[GENEDPW]"
-								LogonAsService="yes"
-								UpdateIfExists="yes"
-								FailIfExists="no"/>-->
-							<File Id="pacificauploaderdexe"
-								Name="pacificauploaderd.exe"
-								Source="go/bin/pacificauploaderd.exe"
-								KeyPath="yes"/>
-							<File Id="pacificauploaderuserd.exe"
-								Name="pacificauploaderuserd.exe"
-								Source="build/pacificauploaderuserd.exe"
-								KeyPath="no"/>
-							<File Id="pacificauploaderserverdll"
-								Name="pacificauploaderserver.dll"
-								Source="build/pacificauploaderserver.dll"
-								KeyPath="no"/>
-							<!--<File Id="pacificauploaderuserswitcher.exe"
-								Name="pacificauploaderuserswitcher.exe"
-								Source="build/pacificauploaderuserswitcher.exe"
-								KeyPath="no"/>-->
-							<File Id="uuidgenexe"
-								Name="uuidgen.exe"
-								Source="build/uuidgen.exe"
-								KeyPath="no"/>
-							<File Id="QtSolutionsServicedll"
-								Name="QtSolutions_Service.dll"
-								Source="build/QtSolutions_Service.dll"
-								KeyPath="no"/>
-						</Component>
-						<Component Id="CommonLibs" Guid="04547079-E201-4587-BADC-1A56AC0DAF6A">
-							<File Id="mingwm10dll"
-								Name="mingwm10.dll"
-								Source="build/mingwm10.dll"
-								KeyPath="no"/>
-							<File Id="sqlite3dll"
-								Name="sqlite3.dll"
-								Source="build/sqlite3.dll"
-								KeyPath="no"/>
-							<File Id="libarchive2.dll"
-								Name="libarchive-2.dll"
-								Source="build/libarchive-2.dll"
-								KeyPath="no"/>
-							<File Id="libexpat1.dll"
-								Name="libexpat-1.dll"
-								Source="build/libexpat-1.dll"
-								KeyPath="no"/>
-							<File Id="libbz22.dll"
-								Name="libbz2-2.dll"
-								Source="build/libbz2-2.dll"
-								KeyPath="no"/>
-							<File Id="liblzma1.dll"
-								Name="liblzma-1.dll"
-								Source="build/liblzma-1.dll"
-								KeyPath="no"/>
-							<File Id="libz1.dll"
-								Name="libz-1.dll"
-								Source="build/libz-1.dll"
-								KeyPath="no"/>
-							<File Id="libgccsdw21dll"
-								Name="libgcc_s_dw2-1.dll"
-								Source="build/libgcc_s_dw2-1.dll"
-								KeyPath="no"/>
-							<File Id="libstdcpp6dll"
-								Name="libstdc++-6.dll"
-								Source="build/libstdc++-6.dll"
-								KeyPath="no"/>
-						</Component>
-						<Component Id="ServiceExecutable" Guid="C389DDE8-1057-4A64-AC32-23C0B4CBC354">
-							<File Id="pacificauploaderserviceexe"
-								Name="pacificauploaderservice.exe"
-								Source="build/pacificauploaderservice.exe"
-								KeyPath="yes"/>
-							<ServiceInstall Id="ServiceInstaller"
-								Type="ownProcess"
-								Vital="yes"
-								Name="PacificaUploaderService"
-								DisplayName="Pacifica Uploader"
-								Description="Uploads files to MyEMSL"
-								Start="auto"
-								Account="LocalSystem"
-								ErrorControl="ignore"
-								Interactive="no"/>
-							<ServiceControl Id="StartService"
-								Start="install"
-								Stop="both"
-								Remove="uninstall"
-								Name="PacificaUploaderService"
-								Wait="yes"/>
-						</Component>
 					</Directory>
 				</Directory>
 			</Directory>
 		</Directory>
 		
 		<Feature Id="Complete" Level="1">
+			<ComponentGroupRef Id="PacificaUploaderGroup"/>
+			<!--
 			<ComponentRef Id="MainExecutable"/>
 			<ComponentRef Id="CommonLibs"/>
-			<ComponentRef Id="PrivComp"/>
 			<ComponentRef Id="ServiceExecutable"/>
+			-->
+			
+			<ComponentRef Id="PrivComp"/>
 			<!--This is found in pacificauploaderuigen.wxs-->
 			<ComponentGroupRef Id="PacificaUploaderUI"/>
 		</Feature>
 		
 		<MajorUpgrade DowngradeErrorMessage="Downgrade not available."/>
 		
-		<!--<CustomAction Id="GenPW" BinaryKey="GenPWDLL" DllEntry="GenPW"/>
+		<!--
+		<CustomAction Id="GenPW" BinaryKey="GenPWDLL" DllEntry="GenPW"/>
 		<CustomAction Id="SavePW.SetProperty" Property="SavePW" Value="[CommonAppDataFolder];[GENEDPW]"/>
-		<CustomAction Id="SavePW" BinaryKey="SavePWDLL" DllEntry="SavePW" Execute="deferred" Impersonate="no"/>-->
+		<CustomAction Id="SavePW" BinaryKey="SavePWDLL" DllEntry="SavePW" Execute="deferred" Impersonate="no"/>
+		-->
 
 		<InstallExecuteSequence>
-			<!--<Custom Action="GenPW" After="InstallInitialize"/>
+			<!--
+			<Custom Action="GenPW" After="InstallInitialize"/>
 			<Custom Action="SavePW.SetProperty" After="GenPW"/>
-			<Custom Action="SavePW" After="InstallFiles">NOT REMOVE ~= "ALL"</Custom>-->
+			<Custom Action="SavePW" After="InstallFiles">NOT REMOVE ~= "ALL"</Custom>
+			-->
 			<ScheduleReboot After="InstallFinalize"/>
 		</InstallExecuteSequence>
 		
+		<!--
 		<Binary Id="GenPWDLL" SourceFile="build/winpwhelper.dll"/>
 
 		<Binary Id="SavePWDLL" SourceFile="build/winpwsaverhelper.dll"/>		
@@ -173,5 +91,6 @@
 		<Condition Message="This setup requires the .NET Framework 3.5 to be installed.">
 			<![CDATA[Installed OR NETFRAMEWORK35]]>
 		</Condition>
+		-->
 	</Product>
 </Wix>

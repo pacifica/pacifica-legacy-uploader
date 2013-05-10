@@ -125,10 +125,12 @@ msis: clean all pacificauploader.wxs pacificauploaderui.wxs pacificauploadersdk.
 	test -f pacificauploader.msi && rm pacificauploader.msi || true
 	test -f pacificauploaderui.msi && rm pacificauploaderui.msi || true
 	test -f pacificauploadersdk.msi && rm pacificauploadersdk.msi || true
-	heat dir "go\src\pacificauploaderd\ui" -cg PacificaUploaderUI -gg -sfrag -dr INSTALLDIR -var var.DaemonUI -out pacificauploaderuigen.wxs
-	candle -ext WiXNetFxExtension pacificauploader.wxs pacificauploaderuigen.wxs -dDaemonUI=go\src\pacificauploaderd\ui -ext WixUtilExtension
-	light -ext WiXNetFxExtension -out pacificauploader.msi pacificauploader.wixobj pacificauploaderuigen.wixobj -ext WixUtilExtension
-	candle pacificauploaderui.wxs
-	light -out pacificauploaderui.msi pacificauploaderui.wixobj -ext WixUtilExtension
-	candle pacificauploadersdk.wxs
-	light -out pacificauploadersdk.msi pacificauploadersdk.wixobj
+	cmd /c scripts\\bundle.bat
+	
+	#heat dir "go\src\pacificauploaderd\ui" -cg PacificaUploaderUI -gg -sfrag -dr INSTALLDIR -var var.DaemonUI -out pacificauploaderuigen.wxs
+	#candle -ext WiXNetFxExtension pacificauploader.wxs pacificauploaderuigen.wxs -dDaemonUI=go\src\pacificauploaderd\ui -ext WixUtilExtension
+	#light -ext WiXNetFxExtension -out pacificauploader.msi pacificauploader.wixobj pacificauploaderuigen.wixobj -ext WixUtilExtension
+	#candle pacificauploaderui.wxs
+	#light -out pacificauploaderui.msi pacificauploaderui.wixobj -ext WixUtilExtension
+	#candle pacificauploadersdk.wxs
+	#light -out pacificauploadersdk.msi pacificauploadersdk.wixobj
