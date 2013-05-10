@@ -7,7 +7,7 @@ CONFIG += release
 
 win32 {
 	SOURCES = service.c
-	target.path = ../../build/
+	target.path = "..\\..\\build\\release"
 	LIBS     += -ladvapi32 -lShlwapi
 	INSTALLS += target
 }

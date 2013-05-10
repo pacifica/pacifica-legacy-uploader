@@ -11,5 +11,5 @@ PKGCONFIG   = qtsolutionsservice
 INSTALLS += target
 
 win32 {
-	target.path = "..\\..\\build"
+	target.path = "..\\..\\build\\release"
 }

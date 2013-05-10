@@ -15,7 +15,7 @@ unix {
 }
 win32 {
 	CONFIG += release
-	target.path = "..\\..\\build"
+	target.path = "..\\..\\build\\release"
 }
 
 INSTALLS += target
