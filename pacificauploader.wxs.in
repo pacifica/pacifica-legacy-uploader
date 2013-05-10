@@ -53,8 +53,7 @@
 			</Directory>
 		</Directory>
 		
-		<Feature Id="Complete" Level="1">
-			<ComponentGroupRef Id="PacificaUploaderGroup"/>
+		<Feature Id="Complete" Level="1">			
 			<!--
 			<ComponentRef Id="MainExecutable"/>
 			<ComponentRef Id="CommonLibs"/>
@@ -62,6 +61,10 @@
 			-->
 			
 			<ComponentRef Id="PrivComp"/>
+			
+			<!-- This is found in pacificauploadergen.wxs -->
+			<ComponentGroupRef Id="PacificaUploaderGroup"/>
+			
 			<!--This is found in pacificauploaderuigen.wxs-->
 			<ComponentGroupRef Id="PacificaUploaderUI"/>
 		</Feature>

@@ -29,6 +29,7 @@ GOROOT ?= /c/Go
 GOROOTBIN := $(GOROOT)/bin
 
 SQLITEDLLS ?= sqlite3.dll
+ARCHIVEDIR ?= $(MINGWBINDIR)
 ARCHIVEDLLS ?= libarchive-2.dll libexpat-1.dll liblzma-1.dll libbz2-2.dll libz-1.dll
 GCCDLLS ?= libgcc_s_dw2-1.dll mingwm10.dll libstdc++-6.dll
 QTDLLS ?= QtCore4.dll qtGui4.dll QtXml4.dll QtNetwork4.dll QtWebKit4.dll QtSvg4.dll
@@ -70,24 +71,47 @@ pacificauploaderall.wxs: pacificauploaderall.wxs.in
 	sed "s/@VERSION@/$(VERSION)/g" < pacificauploaderall.wxs.in > pacificauploaderall.wxs
 
 build-prep-early:
-	test ! -d build && mkdir build || true
-	test ! -d build/iconengines && mkdir -p build/iconengines || true
-	test ! -d build/imageformats && mkdir -p build/imageformats || true
-	test ! -d msisdk && mkdir msisdk || true
+	#test ! -d build && mkdir build || true
+	#test ! -d build/iconengines && mkdir -p build/iconengines || true
+	#test ! -d build/imageformats && mkdir -p build/imageformats || true
+	#test ! -d msisdk && mkdir msisdk || true
 
 build-prep: build-prep-early printsettings
 	cd qmake && $(QMAKE) -recursive
+	
+	mkdir -p build/release/iconengines
+	mkdir -p build/release/imageformats
+	mkdir -p build/lib/pkgconfig
+	mkdir -p build/release
+	
+	# new copying to the release directory.
+	for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build/release; done
+	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build/release; done
+	for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build/release; done
+	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build/release; done
+	for p in $(ARCHIVEDLLS); do cp -u $(ARCHIVEDIR)/$$p build/release; done
+	for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build/release; done
 	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p msisdk; done
 	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p msisdk; done
-	cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build
-	for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
-	for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
-	for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
-	for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build; done
-	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
-	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
-	for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
-	test -f msisdk/msi.lib || cp -a msisdk/libmsi.a msisdk/msi.lib
+	
+	cp -u qtsolutionsservice.pc.win build/lib/pkgconfig/qtsolutionsservice.pc
+	cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build/release
+	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/release/iconengines/qsvgicon4.dll
+	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/release/imageformats/qsvg4.dll
+	
+	
+	# Older stuff
+	#for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p msisdk; done
+	#for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p msisdk; done
+	#cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build
+	#for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
+	#for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
+	#for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
+	#for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build; done
+	#cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
+	#cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
+	#for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
+	#test -f msisdk/msi.lib || cp -a msisdk/libmsi.a msisdk/msi.lib
 
 build-qmake:
 	cd qmake && make
@@ -98,12 +122,12 @@ build-go: pacificauploaderuserd pacificauploaderd
 pacificauploaderd: build-prep-early go/src/pacificauploaderd/common/version.go
 	echo $(GOPATH)
 	go install pacificauploaderd
-	cp -u go/bin/pacificauploaderd.exe build
+	cp -u go/bin/pacificauploaderd.exe build/release
 
 pacificauploaderuserd: build-prep-early
 	echo $(GOPATH)
 	go install pacificauploaderuserd
-	cp -u go/bin/pacificauploaderuserd.exe build
+	cp -u go/bin/pacificauploaderuserd.exe build/release
 
 check: check-common
 
@@ -115,7 +139,7 @@ build-csharp:
 	cd csharp/winhelper/PacificaUploaderService && cmd /c build.cmd
 
 build-final:
-	cp -u go/bin/pacificauploaderuserd.exe build
+	cp -u go/bin/pacificauploaderuserd.exe build/release
 
 build-all: build-prep build-qmake build-go build-tests build-final
 
