@@ -1,16 +1,16 @@
 QMAKE = i686-w64-mingw32-qmake-qt4
 
 ARCHIVE = `pkg-config --cflags --libs libarchive`
-ARCHIVEDIR = `pkg-config --variable exec_prefix libarchive`
+ARCHIVEDIR1 = `pkg-config --variable exec_prefix libarchive`
 
-MINGWBINDIR = $(ARCHIVEDIR)/bin
-MSISDK = $(ARCHIVEDIR)
-PACIFICAAUTHDIR ?= $(ARCHIVEDIR)
-PACIFICASDK ?= $(ARCHIVEDIR)
-QTBINDIR ?= $(ARCHIVEDIR)/bin
+MINGWBINDIR = $(ARCHIVEDIR1)/bin
+MSISDK = $(ARCHIVEDIR1)
+PACIFICAAUTHDIR ?= $(ARCHIVEDIR1)
+PACIFICASDK ?= $(ARCHIVEDIR1)
+QTBINDIR ?= $(ARCHIVEDIR1)/bin
 MSILIBS = libmsi.a
-QTPLUGINSDIR ?= $(ARCHIVEDIR)/lib/qt4/plugins
-SQLITEDIR ?= $(ARCHIVEDIR)/bin
+QTPLUGINSDIR ?= $(ARCHIVEDIR1)/lib/qt4/plugins
+SQLITEDIR ?= $(ARCHIVEDIR1)/bin
 
 SQLITEDLLS ?= libsqlite3-0.dll
 ARCHIVEDLLS = libarchive-12.dll libxml2-2.dll liblzma-5.dll libbz2-1.dll
