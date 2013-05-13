@@ -1,4 +1,4 @@
-VERSION=0.7.4
+VERSION=0.7.5
 
 UNAME=$(shell uname)
 
@@ -39,6 +39,9 @@ clean:
 	rm -f pacificauploader.wxs
 	rm -f pacificauploaderui.wxs
 	rm -f pacificauploadersdk.wxs
+	rm -f pacificauploaderall.wxs
+	rm -f pacificauploadergen.wxs
+	rm -f pacificauploaderuigen.wxs
 	rm -f pacificauploader*.wixobj
 	rm -f pacificauploader*.wixpdb
 	rm -f pacificauploader*.msi
