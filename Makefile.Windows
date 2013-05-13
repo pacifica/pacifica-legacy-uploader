@@ -57,6 +57,7 @@ printsettings:
 	@echo LIBRARY_PATH="$(LIBRARY_PATH)"
 	@echo C_INCLUDE_PATH="$(C_INCLUDE_PATH)"
 	@echo PKG_CONFIG_PATH="$(PKG_CONFIG_PATH)"
+	@echo PACIFICASDK="$(PACIFICASDK)"
 	
 pacificauploader.wxs: pacificauploader.wxs.in
 	sed "s/@VERSION@/$(VERSION)/g" < pacificauploader.wxs.in > pacificauploader.wxs
@@ -94,7 +95,7 @@ build-prep: build-prep-early printsettings
 	for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p msisdk; done
 	for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p msisdk; done
 	
-	cp -u qtsolutionsservice.pc.win build/lib/pkgconfig/qtsolutionsservice.pc
+	#cp -u qtsolutionsservice.pc.win build/lib/pkgconfig/qtsolutionsservice.pc
 	cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build/release
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/release/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/release/imageformats/qsvg4.dll
