@@ -21,7 +21,7 @@ unix:!contains(QMAKE_HOST.arch, x86_64): {
 	target.path = /usr/lib
 }
 win32 {
-	target.path = "..\\..\\build"
+	target.path = "..\\..\\build\release"
 }
 
 INSTALLS += target
