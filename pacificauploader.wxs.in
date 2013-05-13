@@ -65,7 +65,10 @@
 								Account="LocalSystem"
 								ErrorControl="ignore"
 								Interactive="no" />
+							<ServiceControl Id="StartService" Stop="both" Remove="uninstall" Name="pacificauploaderserviceprog" Wait="yes" />
+							<!-- 
 							<ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="pacificauploaderserviceprog" Wait="yes" />
+							-->
 						</Component>
 					</Directory>
 				</Directory>

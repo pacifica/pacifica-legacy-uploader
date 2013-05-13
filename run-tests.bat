@@ -21,7 +21,7 @@ REM Do something with each substring
         REM Do something with the substring - 
         REM we just echo it for the purposes of demo
         echo executing !substring!
-		build\!substring!.exe >!substring!.tmp
+		build\release\!substring!.exe >!substring!.tmp
 		set /p data=<!substring!.tmp
 		del !substring!.tmp
 		if !data! NEQ PASS (
