@@ -48,6 +48,25 @@
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
 				<Directory Id="Pacifica" Name="Pacifica">
 					<Directory Id="INSTALLDIR" Name="Uploader">
+						<Component Id="pacificauploaderservice.install"
+							Guid="900C4AA0-1D50-477D-AFE0-7036A2A5FA62">
+							<File Id="pacificauploaderservice"
+								Name="pacificauploaderservice.exe"
+								Source="build/release/pacificauploaderservice.exe"
+								KeyPath="yes"/>			
+							<ServiceInstall
+								Id="ServiceInstaller"
+								Type="ownProcess"
+								Vital="yes"
+								Name="pacificauploaderserviceprog"
+								DisplayName="Pacifica Uploader Service"
+								Description="Starts and monitors the pacificauploaderd.exe process."
+								Start="auto"
+								Account="LocalSystem"
+								ErrorControl="ignore"
+								Interactive="no" />
+							<ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="pacificauploaderserviceprog" Wait="yes" />
+						</Component>
 					</Directory>
 				</Directory>
 			</Directory>
@@ -67,6 +86,8 @@
 			
 			<!--This is found in pacificauploaderuigen.wxs-->
 			<ComponentGroupRef Id="PacificaUploaderUI"/>
+			
+			<ComponentRef Id="pacificauploaderservice.install" />
 		</Feature>
 		
 		<MajorUpgrade DowngradeErrorMessage="Downgrade not available."/>
