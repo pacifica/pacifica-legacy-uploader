@@ -44,25 +44,47 @@ protected:
 		
 		// Reference the application to get the installation directory.
         QCoreApplication* app = application();
+		
+		// String list of arguments that are going to be passed to 
+		// the uploaderd process.
 		QStringList args;
-		
-		
+				
 		// build up path to the uploader process
 		QString basePath = app->applicationDirPath();
-		args << "-devel" <<"-basedir"<<basePath;
-		
+				
 		QString uploaderdPath = basePath + "/pacificauploaderd.exe";
 		logMessage(QString("Starting Service\nProcess: " + uploaderdPath));
 				
 		// Create the new uploader process.
 		process = new QProcess();
+		// Assuming this is run from windows\system we need
+		// to change the working directory to where the exe is.
 		process->setWorkingDirectory(basePath);
+		
+		// we are in developer mode unless the service is in the
+		// program files.
+		if (basePath.contains("program files", Qt::CaseInsensitive))
+		{
+			logMessage(QString("starting using -system true"));
+			args << "-system" << "true";
+		}
+		else
+		{
+			logMessage(QString("starting using: /devel"));
+			args << "-devel" << "-basedir" << QString(basePath) + "/devel";
+		}
+		
+		// Start the process here.
+		process->start(uploaderdPath, args);
+		
+		/*
 		createEvents();
 		
 		process->setStandardErrorFile(basePath + QString("/stderr.log"));
 		process->setStandardOutputFile(basePath + QString("/stdout.log"));
 		
 		process->start(uploaderdPath, args );
+		*/
 		
 		if(!process->waitForStarted())
 		{
