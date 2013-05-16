@@ -100,20 +100,6 @@ build-prep: build-prep-early printsettings
 	cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/release/iconengines/qsvgicon4.dll
 	cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/release/imageformats/qsvg4.dll
 	
-	
-	# Older stuff
-	#for p in $(MSIHEADERS); do cp -u $(MSISDK)/include/$$p msisdk; done
-	#for p in $(MSILIBS); do cp -u $(MSISDK)/lib/$$p msisdk; done
-	#cp -u $(PACIFICAAUTHDIR)/bin/pacificaauth.dll build
-	#for p in $(ARCHIVEDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
-	#for p in $(GCCDLLS); do cp -u $(MINGWBINDIR)/$$p build; done
-	#for p in $(QTDLLS); do cp -u $(QTBINDIR)/$$p build; done
-	#for p in $(PACIFICASDKDLLS); do cp -u $(PACIFICASDK)/bin/$$p build; done
-	#cp -u $(QTPLUGINSDIR)/iconengines/qsvgicon4.dll build/iconengines/qsvgicon4.dll
-	#cp -u $(QTPLUGINSDIR)/imageformats/qsvg4.dll build/imageformats/qsvg4.dll
-	#for p in $(SQLITEDLLS); do cp -u $(SQLITEDIR)/$$p build; done
-	#test -f msisdk/msi.lib || cp -a msisdk/libmsi.a msisdk/msi.lib
-
 build-qmake:
 	cd qmake && make
 	cd qmake && make install
@@ -134,10 +120,6 @@ check: check-common
 
 run-tests: build-tests
 	cmd /c run-tests.bat
-
-
-build-csharp:
-	cd csharp/winhelper/PacificaUploaderService && cmd /c build.cmd
 
 build-final:
 	cp -u go/bin/pacificauploaderuserd.exe build/release
